@@ -1,141 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulators</title>
-    <link rel="stylesheet" href="{{ asset('css/main.css') }}">
-    <script src="script.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
-        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+@extends('layouts.app')
+
+@section('title', 'Moduļu Mājas Kalkulators')
+
+
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: "Montserrat", sans-serif;
-            margin: 0;
-            padding: 0;
- 
-        }
         body {
             background-image: url("../images/bricks.png");
-            background-size:cover;
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             height: 100vh; 
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            
-           
         }
-        .links li a:hover{
-            color: gold;
-        }
-        li, button, a, .fa-instagram, .fa-facebook, .fa-twitter, .fa-user{
-            color:white;
-        }
-      
-
         .calculator_container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        background-color: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-        border-radius: 8px;
-        max-width: 900px;
-        width: 90vh;
-        height: auto;
-        margin: 20px auto;
-    
-    }
-
-
-    .calculator_container h1 {
-            font-size: 28px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            max-width: 800px;
+            margin: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .progress {
+            display: flex;
             margin-bottom: 20px;
-            color: #333;
+            justify-content: space-between;
+        }
+        .step {
             text-align: center;
         }
-
-    p{
-        margin-bottom: 10px;
-    }
-    h2{
-        margin-bottom: 10px;
-    }
-
-    .edit{
-        background-color: black;
-    }
-
-
+        .step .bullet {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            background: gray;
+            color: white;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .step-title {
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        form.area {
+            margin-top: 20px;
+        }
+        form.area label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        form.area select, form.area input[type="submit"] {
+            display: block;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .edit, .logout {
+            display: inline-block;
+            margin: 10px 0;
+        }
     </style>
-</head>
-<body>
-    <header>
-        <a href="{{ route('home') }}" class="logo">ModuļuMājas</a>
 
-        <nav>
-            <div class = "nav">
-            <ul class="links">
 
-            <li><a href="{{ route('home') }}">Sākums</a></li>
-            <li><a href="{{ route('modularhouses') }}">Moduļu mājas</a></li>
-            <li><a href="{{ route('store') }}">Būvē pats</a></li>
-            <li><a href="{{ route('faq') }}">FAQ</a></li>
-            <li><a href="{{ route('start') }}">Kalkulators</a></li>
-
-            </ul>
-          
-            </div>
-
-            <div class="sub-menu">
-                <div class="menu">
-                    <div class="info">
-                        <img src="{{ $user?->photo ? asset('storage/photos/' . $user->photo) : asset('default_icon.jpg') }}" alt="photo">
-                            <h3>{{ $user?->name ?? 'Viesis' }}</h3>
-                    </div>
-                    <hr>
-                    
-                    @if (Auth::check())
-                        <a href="{{ route('edit') }}" class="menu-link">
-                            <i class="fa-solid fa-user-pen"></i>
-                            <p>Rediģēt profilu</p>
-                            <span>></span>
-                        </a>
-                        <a href="{{ route('logout') }}" class="menu-link">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            <p>Izrakstīties</p>
-                            <span>></span>
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="menu-link">
-                            <i class="fa-solid fa-right-to-bracket"></i>
-                            <p>Pieslēgties</p>
-                            <span>></span>
-                        </a>
-                    @endif
-                </div>
-            </div>
-          
-        </nav>
-        <div class = "media">
-            <a href= "javascript:void(0);" onclick="toggleMenu()" id="subMenu">
-                <i class="fa-regular fa-user"></i>
-            </a>
-            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer">
-                <i class="fa-brands fa-instagram"></i>
-            </a>
-            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-                <i class="fa-brands fa-facebook"></i>
-            </a>
-        </div>
-        
-    </header>
-
+@section('content')
     <div class="calculator_container">
         <div class="progress">
             <div class="step">
@@ -182,8 +109,6 @@
                 <option value="90-120">90 m² - 120 m²</option>
             </select>
 
-           
-        
             <input type="submit" value="Sākt">
         </form>
 
@@ -192,12 +117,4 @@
         @endauth
         <a href="{{ route('home') }}" class="logout button">Atpakaļ</a>
     </div>
-<script src="{{ asset('js/app.js') }}"></script>    
-</body>
-
-</html>
-
-
-    
-  
-
+@endsection
