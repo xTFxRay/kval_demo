@@ -125,17 +125,17 @@
 <div class="cart_container">
     <h1>Jūsu grozs</h1>
 
-    @if(session('cart') && count(session('cart')) > 0)
+    @if($cart && $cart->items->isNotEmpty())
         <div class="cart-items">
-            @foreach(session('cart') as $id => $product)
+            @foreach($cart->items as $item)
                 <div class="cart-item">
-                    <img src="{{ asset($product['image']) }}" alt="{{ $product['name'] }}" width="100">
+                    <img src="{{ asset($item->product->image) }}" alt="{{ $item->product->name }}" width="100">
                     <div class="cart-item-details">
-                        <h3>{{ $product['name'] }}</h3>
-                        <p class="price">${{ number_format($product['price'], 2) }}</p>
-                        <p>Daudzums: {{ $product['quantity'] }}</p>
+                        <h3>{{ $item->product->name }}</h3>
+                        <p class="price">{{ number_format($item->product->price, 2) }}€</p>
+                        <p>Daudzums: {{ $item->quantity }}</p>
                     </div>
-                    <form action="{{ route('cart.remove', $id) }}" method="POST">
+                    <form action="{{ route('cart.remove', $item->product_id) }}" method="POST">
                         @csrf
                         <button type="submit">Noņemt</button>
                     </form>
@@ -144,7 +144,7 @@
         </div>
 
         <div class="cart-summary">
-            <p>Total: ${{ number_format($totalPrice, 2) }}</p>
+            <p>Kopā: {{ number_format($totalPrice, 2) }}€</p>
             <a href="{{ route('verify') }}"><button>Pasūtīt</button></a>
             <a href="{{ route('store') }}"><button>Atgriezties veikalā</button></a>
         </div>

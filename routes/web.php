@@ -18,13 +18,18 @@ Route::post('/addSpecification', [CalculatorController::class, 'addSpecification
 Route::post('/updatePrices', [CalculatorController::class, 'updatePrices'])->name('updatePrices');
 
 Route::get('/editPrices', function () {
+    $user = Auth::user();
     $material_prices = DB::table('products')
-    ->select('name', 'price')
-    ->get()
-    ->pluck('price', 'name') 
-    ->toArray();
-    return view('editPrices', compact( 'material_prices'));
+        ->select('name', 'price', 'category')
+        ->get()
+        ->mapWithKeys(function ($item) {
+            return [$item->name => ['price' => $item->price, 'category' => $item->category]];
+        })
+        ->toArray();
+    
+    return view('editPrices', compact('material_prices', 'user'));
 })->name('editPrices');
+
 
 
 Route::get('/specification', function () {
@@ -125,7 +130,7 @@ Route::get('/ameneties', [CalculatorController::class, 'plumblight'])->name('plu
 
 Route::get('/results', [CalculatorController::class, 'results'])->name('results');
 
-
+Route::post('/extras', [CalculatorController::class, 'extras'])->name('extras');
 
 Route::get('/building', [CalculatorController::class, 'building'])->name('building');
 

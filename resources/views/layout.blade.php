@@ -36,6 +36,64 @@ body {
         .calculator-container{
             z-index: 1;
         }
+
+        .modal {
+        display: none;
+        position: fixed;
+        z-index: 2;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+        }
+
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .button-link {
+            display: inline-block;
+            width: 93%;
+            background-color: #4CAF50; 
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin: 10px 0;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-link:hover {
+            background-color: #45a049; 
+        }
 </style>
 <body>
 <div class="black"></div>
@@ -65,6 +123,7 @@ body {
 
 
         <input type="submit" value="Turpināt">
+        <a href="{{ route('start') }}" class="button-link">Beigt</a>
     </form>
 
 </div>
@@ -75,5 +134,32 @@ body {
 </div>
 </body>
 
-<script src="{{ asset('js/app.js') }}"></script>
+<script src="{{ asset('js/app.js') }}"></script> 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("myModal");
+    const modalImg = document.getElementById("img01");
+    const closeModal = document.getElementById("closeModal");
+
+    const images = document.querySelectorAll(".plan-image");
+    images.forEach(image => {
+        image.addEventListener("click", function () {
+            modal.style.display = "block"; 
+            modalImg.src = this.src;      
+            modalImg.alt = this.alt;    
+        });
+    });
+
+    closeModal.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", function (event) {
+        if (event.target !== modalImg) {
+            modal.style.display = "none";
+        }
+    });
+});
+</script>
+
 </html>

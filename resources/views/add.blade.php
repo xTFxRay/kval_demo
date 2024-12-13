@@ -24,7 +24,7 @@
 
         .black {
             background-color: rgba(0, 0, 0, 0.5); 
-            height: 100%;
+            height: 105%;
             width: 100%;
             position: absolute;
             z-index: 0;
@@ -36,6 +36,26 @@
         }
         .hidden {
             display: none;
+        }
+
+        .button-link {
+            display: inline-block;
+            width: 90%;
+            background-color: #4CAF50; 
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin: 10px 0;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-link:hover {
+            background-color: #45a049; 
         }
     </style>
 </head>
@@ -91,8 +111,8 @@
             <label for="drosibas-sistema">Drošības sistēmas:</label>
             <select id="drosibas-sistema" name="drosibas-sistema">
                 <option value="no">-</option>
-                <option value="signalizacija">Signalizācijas sistēma</option>
-                <option value="videonoverosana">Videonovērošanas sistēma</option>
+                <option value="Signalizācijas sistēma">Signalizācijas sistēma</option>
+                <option value="Videonovērošanas sistēma">Videonovērošanas sistēma</option>
             </select>
 
             <label for="sensori">Sensori:</label>
@@ -105,6 +125,7 @@
             <h3>Aprēķinātās izmaksas: <span>{{ $totalCost ?? 0 }}</span>€</h3>
 
             <input type="submit" value="Turpināt">
+            <a href="{{ route('start') }}" class="button-link">Beigt</a>
         </form>
     </div>
 

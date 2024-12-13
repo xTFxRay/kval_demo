@@ -293,7 +293,7 @@
             </div>
             <div class="product_details">
                 <h2>{{ $product->name }}</h2>
-                <p>{{ $product->description ?? 'No description available for this product.' }}</p>
+                <p>{{ $product->description ?? 'Apraksts nav pieejams.' }} (Pieejams: {{$product->quantity}})</p>
                 <p class="price">{{ number_format($product->price, 2) }}€</p>
                 <div class="button_row">
                     <form action="{{ route('cart.add', $product->id) }}" method="POST">

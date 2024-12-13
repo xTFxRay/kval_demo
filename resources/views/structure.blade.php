@@ -35,6 +35,26 @@
         .form-container{
             z-index: 1;
         }
+
+        .button-link {
+            display: inline-block;
+            width: 90%;
+            background-color: #4CAF50; 
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin: 10px 0;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-link:hover {
+            background-color: #45a049; 
+        }
 </style>
 <body>
     <div class="black"></div>
@@ -65,10 +85,10 @@
               @csrf
                 <h3>Pamatu veidi</h3>
                 <select id="pamatu-veidi" name="pamatu-veidi">
-                    <option value="lentes">Lentes pamati</option>
-                    <option value="platnes">Plātņu pamati</option>
-                    <option value="pali">Pāļpamati</option>
-                    <option value="bloku_pamati">Saliekamo bloku pamati</option>
+                    <option value="Lentes pamati">Lentes pamati</option>
+                    <option value="Plātņu pamati">Plātņu pamati</option>
+                    <option value="Pāļpamati">Pāļpamati</option>
+                    <option value="Bloku pamati">Saliekamo bloku pamati</option>
                 </select>
 
                 <h3>Sienas biezums</h3>
@@ -81,9 +101,9 @@
                 <h3>Sienas tips</h3>
                 <select id="sienas-tips" name="sienas-tips">
                     <option value="Keramzitbloku">Keramzītbloku sienas</option>
-                    <option value="Koka_karkasa">Koka karkasa sienas</option>
-                    <option value="Monolita_betona">Monolīta betona sienas</option>
-                    <option value="Metala_karkasa">Metāla karkasa sienas</option>
+                    <option value="Koka karkasa">Koka karkasa sienas</option>
+                    <option value="Monolīta betona">Monolīta betona sienas</option>
+                    <option value="Metāla karkasa">Metāla karkasa sienas</option>
                 </select>
 
                 <h3>Jumta segums</h3>
@@ -96,6 +116,7 @@
                 <h3>Aprēķinātās izmaksas: <span>{{ $totalCost ?? 0 }}</span>€</h3>
                 
                 <input type="submit" value="Nākamais">
+                <a href="{{ route('start') }}" class="button-link">Beigt</a>
             </form>
         </div>
     </div>

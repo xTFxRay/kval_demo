@@ -77,6 +77,7 @@
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 15px;
             padding: 40px;
+            margin-top: 10px;
         }
 
         .text-area h1, .text-area p {

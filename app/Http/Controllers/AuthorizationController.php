@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Cart;
+
 use Session;
 
 
@@ -71,6 +73,16 @@ class AuthorizationController extends Controller
 
 }
     function logout(Request $request){
+
+        $user = Auth::user();
+
+        $cart = Cart::where('user_id', $user->id)->where('status', 'active')->first();
+
+        if ($cart) {
+            $cart->status = 'abandoned';
+            $cart->save();
+        }
+
         Session::flush();
         Auth::logout();
         return redirect(route('login'));

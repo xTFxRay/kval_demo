@@ -211,7 +211,7 @@ button:hover{
     width: 100%;
     padding: 10px;
     margin-top: 20px;
-    background-color: grey;
+    background-color: green;
     color: white;
     border: none;
     border-radius: 4px;
@@ -307,7 +307,7 @@ a:hover {
 .edit {
     margin-top: 20px;
     padding: 10px 20px;
-  
+    background-color: black;
     color: white;
     border: none;
     border-radius: 5px;
@@ -352,7 +352,7 @@ margin-top: 5px;
 .progress::before {
 content: '';
 position: absolute;
-top: 15px;
+top: 24px;
 left: 50px;
 right: 50px;
 height: 3px;
@@ -438,6 +438,7 @@ select, input[type="submit"] {
     font-size: 16px; 
     margin-bottom: 10px;
     margin-top: 10px;
+    
 }
 
 .furniture_set {

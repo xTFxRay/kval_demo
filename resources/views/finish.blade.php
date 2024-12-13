@@ -35,6 +35,26 @@
         .form-container{
             z-index: 1;
         }
+
+        .button-link {
+            display: inline-block;
+            width: 90%;
+            background-color: #4CAF50; 
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin: 10px 0;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-link:hover {
+            background-color: #45a049; 
+        }
 </style>
 <body>
     <div class="black"></div>
@@ -66,7 +86,7 @@
             <label for="gridu-veids">Grīdas veids:</label>
             <select id="gridu-veids" name="gridu-veids">
                 <option value="Parkets">Parkets</option>
-                <option value="Lamināts">Lamināts</option>
+                <option value="Laminats">Lamināts</option>
                 <option value="Flīzes">Flīzes</option>
             </select>
 
@@ -82,24 +102,25 @@
             <select id="griestu-apdare" name="griestu-apdare">
                 <option value="Bez apdares">Bez apdares</option>
                 <option value="Krasa">Krāsaoti griesti</option>
-                <option value="paneli">Paneļi</option>
-                <option value="koka-apsuvums">Koka apšuvums</option>
-                <option value="gipskartons">Ģipškartona griesti</option>
+                <option value="Paneļi">Paneļi</option>
+                <option value="Koka apšuvums">Koka apšuvums</option>
+                <option value="Ģipškartons">Ģipškartona griesti</option>
             </select>
 
             <h3>Ārējā apdare</h3>
             <label for="fasades-apsuvums">Fasādes apšuvums:</label>
             <select id="fasades-apsuvums" name="fasades-apsuvums">
-                <option value="blank">Bez apšuvuma</option>
-                <option value="metals">Metāla apšuvums</option>
-                <option value="vinils">Vinila apšuvums</option>
-                <option value="akmens">Akmens apšuvums</option>
+                <option value="Bez apšuvuma">Bez apšuvuma</option>
+                <option value="Metāla apšuvums">Metāla apšuvums</option>
+                <option value="Vinila apšuvums">Vinila apšuvums</option>
+                <option value="Akmens apšuvums">Akmens apšuvums</option>
             </select>
 
 
             <h3>Aprēķinātās izmaksas: <span>{{$totalCost ?? 0}}</span>€</h3>
 
             <input type="submit" value="Turpināt">
+            <a href="{{ route('start') }}" class="button-link">Beigt</a>
         </form>
     </div>
 </body>

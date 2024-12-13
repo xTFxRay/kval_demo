@@ -39,43 +39,6 @@ function toggleCardNumberField() {
 }
 
 
-
-function toggleFields() {
-    var zogsUzst = document.getElementById('zoga-uzstadisana').value;
-    var celinsUzst = document.getElementById('celins').value; 
-    var zaliensUzst = document.getElementById('zaliens').value;
-
-    var zogsField = document.getElementById('platiba');
-    if (zogsUzst === 'Jā') {
-        zogsField.style.display = 'block';
-    } else {
-        zogsField.style.display = 'none';
-    }
-
-    var celinaField = document.getElementById('celina_uzstadisana'); 
-    if (celinsUzst === 'Jā') {
-        celinaField.style.display = 'block';
-    } else {
-        celinaField.style.display = 'none';
-    }
-
-    var zaliensField = document.getElementById('zaliena_ierikosana');
-    if (zaliensUzst === 'Jā') {
-        zaliensField.style.display = 'block';
-    } else {
-        zaliensField.style.display = 'none';
-    }
-}
-
-
-window.onload = function() {
-    toggleCardNumberField();  
-    document.getElementById('zoga-uzstadisana').addEventListener('change', toggleFields);
-    document.getElementById('celins').addEventListener('change', toggleFields); 
-    document.getElementById('zaliens').addEventListener('change', toggleFields);
-};
-
-
 function popup() {
     document.getElementById('popup').style.display = 'flex';
 }

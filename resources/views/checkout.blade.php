@@ -64,46 +64,49 @@
 
 
 @section('content')
-    <div class="checkout_container">
-        <h1>Pasūtījums</h1>
+<div class="checkout_container">
+    <h1>Pasūtījums</h1>
 
-        <div class="order-summary">
-            @if(session('cart') && count(session('cart')) > 0)
-                @foreach(session('cart') as $product)
-                    <p><strong>{{ $product['name'] }}</strong> x {{ $product['quantity'] }} - {{ number_format($product['price'] * $product['quantity'], 2) }}€</p>
-                @endforeach
-                <p><strong>Piegāde:</strong> 5.00€</p>
-                <p><strong>Kopējā summa:</strong> {{ number_format($totalPrice, 2) }}€</p>
-            @else
-                <p>Jūsu grozs ir tukšs</p>
-            @endif
+    <div class="order-summary">
+        @if($cart && $cart->items->isNotEmpty())
+            @foreach($cart->items as $item)
+                <p><strong>{{ $item->product->name }}</strong> x {{ $item->quantity }} - {{ number_format($item->product->price * $item->quantity, 2) }}€</p>
+            @endforeach
+            <p><strong>Piegāde:</strong> 5.00€</p>
+            <p><strong>Kopējā summa:</strong> {{ number_format($totalPrice, 2) }}€</p>
+        @else
+            <p>Jūsu grozs ir tukšs</p>
+        @endif
+    </div>
+
+    <form action="{{ route('order') }}" method="POST" class="checkout-form">
+        @csrf
+        <h2>Apmaksas un piegādes informācija</h2>
+        <label for="name">Vārds</label>
+        <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required>
+
+        <input type="hidden" name="userID" value="{{ Auth::user()->id }}">
+
+        <label for="email">Ē-pasts</label>
+        <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required>
+
+        <label for="address">Piegādes adrese</label>
+        <textarea name="address" id="address" rows="3" required></textarea>
+
+        <label for="payment">Apmaksas metode</label>
+        <select name="payment" id="payment" required onchange="toggleCardNumberField()">
+            <option value="credit_card">Kredītkarte</option>
+            <option value="on_delivery">Apmaksa saņemšanas brīdī</option>
+        </select>
+
+        <div id="credit_card_field" style="display: none;">
+            <label for="card_number">Kredītkarte numurs</label>
+            <input type="text" name="card_number" id="card_number" placeholder="Ievadiet kredītkartes numuru" pattern="\d{16}" maxlength="16">
         </div>
 
-        <form action="{{ route('order') }}" method="POST" class="checkout-form">
-            @csrf
-            <h2>Apmaksas un piegādes informācija</h2>
-            <label for="name">Vārds</label>
-            <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required>
+        <input type="hidden" name="total_amount" value="{{ number_format($totalPrice, 2) }}">
+        <button type="submit">Pasūtīt</button>
+    </form>
+</div>
 
-            <label for="email">Ē-pasts</label>
-            <input type="email" name="email" id="email" value="{{ old('name', Auth::user()->email) }}" required>
-
-            <label for="address">Piegādes adrese</label>
-            <textarea name="address" id="address" rows="3" required></textarea>
-
-            <label for="payment">Apmaksas metode</label>
-            <select name="payment" id="payment" required onchange="toggleCardNumberField()">
-                <option value="credit_card">Kredītkarte</option>
-                <option value="on_delivery">Apmaksa saņemšanas brīdī</option>
-            </select>
-
-            <div id="credit_card_field" style="display: none;">
-                <label for="card_number">Kredītkarte numurs</label>
-                <input type="text" name="card_number" id="card_number" placeholder="Ievadiet kredītkartes numuru" pattern="\d{16}" maxlength="16">
-            </div>
-
-            <input type="hidden" name="total_amount" value="{{ number_format($totalPrice, 2) }}">
-            <button type="submit">Pasūtīt</button>
-        </form>
-    </div>
 @endsection

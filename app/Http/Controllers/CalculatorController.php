@@ -26,6 +26,8 @@ class CalculatorController extends Controller
     protected $rooms;
     protected $lighting_count;
     protected $wall_cost;
+
+    protected $fasade;
   
     public function __construct()
     {
@@ -39,6 +41,7 @@ class CalculatorController extends Controller
         $this->rooms = config('def_values.rooms');
         $this->lighting_count = config('def_values.outside_lighting_count');
         $this->wall_cost = config('def_values.wall_frame_cost');
+        $this->fasade = config('def_values.fasade');
         
 
         $this->materialPrices = Product::all(['name', 'price'])->pluck('price', 'name')->toArray();
@@ -124,19 +127,19 @@ class CalculatorController extends Controller
         $totalCost = ($buildData['totalCost'] ?? 0) - $previousStructureCost;
     
         $structureCost = 0;
-        if ($request->input('projekts') == 'yes') {
+        if ($request->input('projekts') == 'Nepieciešams') {
             $structureCost += $this->pricing['buildProject'];
         }
-        if ($request->input('merisana') == 'yes') {
+        if ($request->input('merisana') == 'Nepieciešams') {
             $structureCost += $this->pricing['groundMeasurement'];
         }
-        if ($request->input('robezu-apstiprinasana') == 'yes') {
+        if ($request->input('robezu-apstiprinasana') == 'Nepieciešams') {
             $structureCost += $this->pricing['propertyBorderSetting'];
         }
-        if ($request->input('atlauja') == 'yes') {
+        if ($request->input('atlauja') == 'Nepieciešams') {
             $structureCost += $this->pricing['buildPermission'];
         }
-        if ($request->input('eksplotacija') == 'yes') {
+        if ($request->input('eksplotacija') == 'Nepieciešams') {
             $structureCost += $this->pricing['commisioning'];
         }
     
@@ -173,9 +176,13 @@ class CalculatorController extends Controller
     
     $heatingCost = 0;
     $materialPrices = $this->materialPrices;
+
+    $defaultWallWidth = 15; 
+
+    $wallWidthFactor = $request->input('sienas-biezums') / $defaultWallWidth;
   
     $heatingCost += ($this->pricing[$request->input('pamatu-veidi')]) * ($this->sizes[$buildData['housePlan']]);
-    $heatingCost += $this->wall_cost[$request->input('sienas-tips')] * $this->walls[$buildData['housePlan']];
+    $heatingCost += $this->wall_cost[$request->input('sienas-tips')] * $this->walls[$buildData['housePlan']] * $wallWidthFactor;;
     $heatingCost += ($materialPrices[$request->input('jumta-veidi')] + $this->pricing['roof']) * ($this->sizes[$buildData['housePlan']]);
 
     $buildData['foundationType'] = $request->input('pamatu-veidi');
@@ -286,6 +293,7 @@ public function plumblight(Request $request)
     ]);
 
     $buildData = Session::get('buildData', []);
+   
     $previousPlumblightCost = $buildData['plumblightCost'] ?? 0;
 
     $totalCost = Session::get('totalCost', 0) - $previousPlumblightCost;
@@ -299,6 +307,14 @@ public function plumblight(Request $request)
     if ($request->input("sienu-apdare") != "Bez apdares") {
         $plumblightCost += ($materialPrices[$request->input('sienu-apdare')] + $this->pricing[$request->input('sienu-apdare')])
                         * $this->walls[$buildData['housePlan']];
+    }
+    if ($request->input("griestu-apdare") != "Bez apdares") {
+        $plumblightCost +=$this->pricing[$request->input('griestu-apdare')]
+                        * $this->floor[$buildData['housePlan']];
+    }
+    if ($request->input("fasades-apsuvums") != "Bez apšuvuma") {
+        $plumblightCost +=$this->pricing[$request->input('fasades-apsuvums')]
+                        * $this->fasade[$buildData['housePlan']];
     }
 
     $buildData['floor'] = $request->input('gridu-veids');
@@ -317,7 +333,8 @@ public function plumblight(Request $request)
 
 
 public function furniture(Request $request)
-{
+{   
+   
     $request->validate([
         'ventilacija' => 'string',
         'gaisa_filtrs' => 'string',
@@ -354,7 +371,6 @@ public function furniture(Request $request)
     $totalCost = (float)round($totalCost, 2);
     Session::put('buildData', $buildData);
     Session::put('totalCost', $totalCost);
-
     return view('furniture', ['totalCost' => $totalCost]);
 }
 
@@ -373,7 +389,6 @@ public function add(Request $request)
     $materialPrices = $this->materialPrices;
     $plan = $buildData['housePlan'];
 
-
     if (
         $request->input('furniture_set') == 'Koka' || 
         $request->input('furniture_set') == 'Ādas' || 
@@ -382,12 +397,12 @@ public function add(Request $request)
     ) {
     $addCost += $materialPrices[$request->input('furniture_set') . ' krēsls'] * config('def_values.furniture.' . $plan . '.chairs');
     $addCost += $materialPrices[$request->input('furniture_set') . ' galds'] * config('def_values.furniture.' . $plan . '.tables');
-    $addCost += $materialPrices[$request->input('furniture_set') . ' dīvāns'] * config('def_values.furniture.' . $plan . '.sofas');
+    $addCost += $materialPrices[$request->input('furniture_set') . ' dīvans'] * config('def_values.furniture.' . $plan . '.sofas');
     $addCost += $materialPrices[$request->input('furniture_set') . ' skapis'] * config('def_values.furniture.' . $plan . '.cupboards');
     $addCost += $materialPrices[$request->input('furniture_set') . ' gulta'] * config('def_values.furniture.' . $plan . '.beds');
     }
 
-    if ($request->input('design_consultation') == 'yes') {
+    if ($request->input('design_consultation') == 'Jā') {
         $addCost += $this->pricing['design'];
     }
 
@@ -405,7 +420,8 @@ public function add(Request $request)
     return view('add', ['totalCost' => $totalCost]);
 }
 public function com(Request $request)
-{
+{   
+   
     $request->validate([
         'garaza' => 'nullable|int',
         'stavvieta' => 'nullable|int',
@@ -451,6 +467,7 @@ public function com(Request $request)
 
 public function extras(Request $request){
 
+   
     $request->validate([
         'platiba' => 'nullable|numeric',
         'varti' => 'nullable|string',
@@ -472,21 +489,21 @@ public function extras(Request $request){
     $plan = $buildData['housePlan'];
 
     if ($request->input('spot_gaismas')) {
-        $resultsCost += $materialPrices["spot_gaismas"] * ($this->rooms[$plan] * 4);
+        $resultsCost += $materialPrices["Spot gaismas"] * ($this->rooms[$plan] * 4);
     }
 
    
     if ($request->input('led_paneli')) {
-        $resultsCost += $materialPrices["led_paneli"] * ($this->rooms[$plan] * 4);
+        $resultsCost += $materialPrices["LED paneli"] * ($this->rooms[$plan] * 4);
     }
     if ($request->input('sienas_gaismas')) {
-        $resultsCost += $this->lighting_count[$plan] * $materialPrices['sienas_gaismeklis'];
+        $resultsCost += $this->lighting_count[$plan] * $materialPrices['Sienas gaismeklis'];
     }
     if ($request->input('cela_apg')) {
-        $resultsCost += $this->lighting_count[$plan] * $materialPrices['cela_apgaismojums'];
+        $resultsCost += $this->lighting_count[$plan] * $materialPrices['Ceļa apgaismojums'];
     }
     if ($request->input('zemes_apg')) {
-        $resultsCost += $this->lighting_count[$plan] * $materialPrices['zemes_lampa'];
+        $resultsCost += $this->lighting_count[$plan] * $materialPrices['Zemes lampa'];
     }
     if ($request->input('platiba')) {
         $resultsCost += $request->input('platiba') * $this->pricing['fence'];
@@ -494,7 +511,7 @@ public function extras(Request $request){
     if ($request->input('celina_uzstadisana') != 'no') {
         $resultsCost += $this->pricing['paving'];
     }
-    if ($request->input('varti') != 'no') {
+    if ($request->input('varti') != 'Bez') {
         $resultsCost += $this->pricing[$request->input('varti')];
     }
     if ($request->input('zaliena_ierikosana') != 'no') {
@@ -519,8 +536,15 @@ public function extras(Request $request){
     $totalCost = (float)round($totalCost, 2);
     Session::put('buildData', $buildData);
     Session::put('totalCost', $totalCost);
+   
 
-    return view('extras', ['totalCost' => $totalCost]);
+
+    if (Auth::check()) {
+        return redirect()->route('specification');
+    } else {
+     
+        return redirect()->route('results');
+    }
 }
 
 public function addSpecification(Request $request)
@@ -572,6 +596,7 @@ public function results(Request $request)
     $user = $user = Auth::user(); 
     $buildData = Session::get('buildData', []);
     $totalCost = Session::get('totalCost', 0);
+   
     $buildData['userID'] = $user->id;
     try {
         $build = Build::create($buildData);

@@ -35,6 +35,26 @@
         .form-container{
             z-index: 1;
         }
+
+        .button-link {
+            display: inline-block;
+            width: 90%;
+            background-color: #4CAF50; 
+            color: white;
+            text-align: center;
+            padding: 10px 20px;
+            margin: 10px 0;
+            text-decoration: none;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-link:hover {
+            background-color: #45a049; 
+        }
 </style>
 <body>
     <div class="black"></div>
@@ -108,6 +128,7 @@
                 <h3>Aprēķinātās izmaksas: <span>{{ $totalCost ?? 0 }}</span>€</h3>
 
                 <input type="submit" value="Nākamais">
+                <a href="{{ route('start') }}" class="button-link">Beigt</a>
             </form>
         </div>
     </div>

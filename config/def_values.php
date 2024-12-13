@@ -2,13 +2,13 @@
 
 return [
     'work' => [
-        'laminats' => 9.00,
+        'Laminats' => 9.00,
         'Parkets' => 30.00,
-        'flizes' => 38.00,
-        'krasa' => 5.00,
-        'tapetes'=> 10.00,
+        'Flīzes' => 38.00,
+        'Krasa' => 5.00,
+        'Tapetes'=> 10.00,
         'panel_installation' => 10.00,
-        'dekorativas_plaksnes' => 15.00,
+        'Dekoratīvās plāksnes' => 15.00,
         'wall_plastering' => 10.00,
         'fence' => 120.00,
         'paving' => 70.00,
@@ -24,22 +24,28 @@ return [
         'commisioning' => 300.00,
         'garage' => 800.00,
         'design' => 100.00,
-        'platnes' => 180.00,
-        'lentes' => 100.00,
-        'bloku_pamati' => 170.00,
-        'pali' => 200.00,
+        'Plātņu pamati' => 180.00,
+        'Lentes pamati' => 100.00,
+        'Bloku pamati' => 170.00,
+        'Pāļpamati' => 200.00,
         'heating_montage'=> 10.00,
-        'centralais_filtrs'=> 740.00,
-        'udens_filtrs'=> 45.00,
-        'ventilacija'=> 250.00,
-        'gaisa_filtrs'=> 70.00,
+        'Centrālais filtrs'=> 740.00,
+        'Ūdens filtrs'=> 45.00,
+        'Ventilācija'=> 250.00,
+        'Gaisa filtrs'=> 70.00,
         'apgaismojuma_uzstadisana'=> 10.00,
-        'signalizacija'=> 100.00,
-        'videonoverosana'=> 500.00,
-        'varti'=> 100.00,
-        'elektriskie_varti'=> 800.00,
+        'Signalizācijas sistēma'=> 100.00,
+        'Videonovērošanas sistēma'=> 500.00,
+        'Manuāli vārti'=> 100.00,
+        'Elektriskie vārti'=> 800.00,
         'zaliens'=> 5.00,
-        
+        'Paneļi' => 50, 
+        'Koka apšuvums' => 100, 
+        'Ģipškartona griesti' => 45, 
+        'Metāla apšuvums' => 70, 
+        'Akmens apšuvums' => 120, 
+        'Vinila apšuvums' => 60, 
+
 
     ],
 
@@ -172,10 +178,19 @@ return [
     ],
     'wall_frame_cost' => [
         'Keramzitbloku' => 40.00,
-        'Koka_karkasa' => 35.00,
-        'Monolita_betona' => 69.00,
-        'Metala_karkasa' => 47.00,
+        'Koka karkasa' => 35.00,
+        'Monolīta betona' => 69.00,
+        'Metāla karkasa' => 47.00,
         
+    ],
+
+    'fasade' => [
+        'Namejs' => 81.4, 
+        'Astra' => 93, 
+        'Auseklis' => 101.1, 
+        'Gaiziņš' => 109.3, 
+        'Lubāns' => 121.2, 
+        'Tors' => 134, 
     ],
 
 

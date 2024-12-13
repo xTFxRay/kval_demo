@@ -57,7 +57,7 @@
 </head>
 <body>
     <header>
-        <a href="{{ route('home') }}" class="logo">ModuļuMājas</a>
+        <a href="{{ route('adminDash') }}" class="logo">ModuļuMājas</a>
 
         <nav>
             <div class = "nav">
