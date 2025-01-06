@@ -38,7 +38,7 @@
         .button-link {
             display: inline-block;
             width: 90%;
-            background-color: #4CAF50; 
+            background-color: green; 
             color: white;
             text-align: center;
             padding: 10px 20px;
@@ -51,9 +51,12 @@
             transition: background-color 0.3s ease;
         }
 
+        
         .button-link:hover {
             background-color: #45a049; 
-        }
+            text-decoration: none;
+        }; 
+        
 </style>
 <body>
     <div class="black"></div>
@@ -116,9 +119,6 @@
                     <option value="Nepieciešams">Nepieciešams</option>
                 </select>
 
-                <h3>Aprēķinātās izmaksas: <span>{{ $totalCost ?? 0 }}</span>€</h3>
-
-                
                 <input type="submit" value="Nākamais">
                 <a href="{{ route('start') }}" class="button-link">Beigt</a>
             </form>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Build;
+use App\Models\BuildItem;
 use App\Models\Product;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
@@ -45,7 +46,7 @@ class CalculatorController extends Controller
         
 
         $this->materialPrices = Product::all(['name', 'price'])->pluck('price', 'name')->toArray();
-
+        Session::forget('specifications');
 
         
     }
@@ -97,6 +98,11 @@ class CalculatorController extends Controller
 
     public function building(Request $request)
     {
+
+        if (!$request->has('housePlan')) {
+            return redirect()->back()->with('error', 'Atzīmējiet visas obligātās opcijas');
+        }
+        
         $request->validate([
             'housePlan'=> 'string|required',
         ]);
@@ -299,15 +305,22 @@ public function plumblight(Request $request)
     $totalCost = Session::get('totalCost', 0) - $previousPlumblightCost;
     $plumblightCost = 0;
     $materialPrices = $this->materialPrices;
-
+  
+   
     if ($request->input("gridu-veids") != "Bez apdares") {
         $plumblightCost += ($materialPrices[$request->input("gridu-veids")] + $this->pricing[$request->input("gridu-veids")])
                         * $this->floor[$buildData['housePlan']];
     }
-    if ($request->input("sienu-apdare") != "Bez apdares") {
+
+    if ($request->input("sienu-apdare") == "Dekoratīvās plāksnes") {
+        $plumblightCost += ($this->pricing[$request->input("sienu-apdare")])
+                        * $this->floor[$buildData['housePlan']];
+    }
+    else if ($request->input("sienu-apdare") != "Bez apdares"){
         $plumblightCost += ($materialPrices[$request->input('sienu-apdare')] + $this->pricing[$request->input('sienu-apdare')])
                         * $this->walls[$buildData['housePlan']];
     }
+
     if ($request->input("griestu-apdare") != "Bez apdares") {
         $plumblightCost +=$this->pricing[$request->input('griestu-apdare')]
                         * $this->floor[$buildData['housePlan']];
@@ -442,10 +455,10 @@ public function com(Request $request)
     if ($request->input('stavvieta')) {
         $comCost += $this->pricing['paving'] * $request->input('stavvieta');
     }
-    if ($request->input('drosibas-sistema') != 'no') {
+    if ($request->input('drosibas-sistema') != 'Nē') {
         $comCost += $this->pricing[$request->input('drosibas-sistema')];
     }
-    if ($request->input('sensori') != 'no') {
+    if ($request->input('sensori') != 'Nē') {
         $comCost += $materialPrices[$request->input('sensori')] * 4;
     }
 
@@ -549,9 +562,21 @@ public function extras(Request $request){
 
 public function addSpecification(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+        }
+
+        if (!($request->specName)) {
+            return redirect()->back()->with("error", "Ievadiet korektu izmaksas nosaukumu!");
+        }
+        
+        if (!($request->specPrice) || $request->specPrice < 0) {
+            return redirect()->back()->with("error", "Ievadiet korektu papildus izmaksas cenu!");
+        }
+
        $request->validate([
-            'specName' => 'string|max:255',
-            'specPrice' => 'numeric|min:0',
+            'specName' => 'required|string|max:255',
+            'specPrice' => 'required|numeric|min:0',
         ]);
 
         $specifications = Session::get('specifications', []);
@@ -567,15 +592,23 @@ public function addSpecification(Request $request)
         $totalCost += $request->input('specPrice');
         Session::put('totalCost', $totalCost);
 
-        
-        
-        return redirect()->back()->with('success', 'Specifikācija pievienota veiksmīgi!');
+        return redirect()->back()->with('success', 'Izmaksa pievienota veiksmīgi!');
     }
 
 
     public function updatePrices(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+        }
+
         $updatedPrices = $request->input('prices');
+
+        foreach ($updatedPrices as $key => $newPrice) {
+            if (!is_numeric($newPrice)) {
+                return redirect()->back()->with('error', 'Cenām ir jābūt ievadītām kā skaitļiem!');
+            }
+        }
         
         $materialPrices = Session::get('material_prices', []); 
         
@@ -586,31 +619,92 @@ public function addSpecification(Request $request)
         }
     
         Session::put('material_prices', $materialPrices);
-    
+      
         return redirect()->route('start')->with('success', 'Cenas ir atjauninātas!');
 
     }
     
-public function results(Request $request)
-{
-    $user = $user = Auth::user(); 
-    $buildData = Session::get('buildData', []);
-    $totalCost = Session::get('totalCost', 0);
-   
-    $buildData['userID'] = $user->id;
-    try {
-        $build = Build::create($buildData);
+    public function results(Request $request)
+    {
+        //Iegūst lietotāja datus, kalkulatora saglabātās izmaksas un kopējo summu
+        $user = Auth::user();
+        $buildData = Session::get('buildData', []);
+        $totalCost = Session::get('totalCost', 0);
         
-        if (!$build) {
-            dd('Build creation failed');
+      
+        //Izveido būves ierakstu datubāzē (tikai reģistrētiem lietotājiem)
+        if (Auth::check()) {
+            $build = Build::create([
+                'userID' => $user->id,
+                'cost' => $totalCost,
+            ]);
         }
-    } catch (\Exception $e) {
-        dd('Error saving Build to DB: ' . $e->getMessage());
-    }
-
-
-    return view('results', ['build' => $build, 'totalCost' => $totalCost, 'user' => $user]);
     
-}
+        
+        $items = [
+            ['specification' => 'squareMeters', 'value' => $buildData['squareMeters'] ?? '-'],
+            ['specification' => 'wallWidth', 'value' => $buildData['wallWidth'] ?? '-'],
+            ['specification' => 'floor', 'value' => $buildData['floor'] ?? '-'],
+            ['specification' => 'wallsType', 'value' => $buildData['wallsType'] ?? '-'],
+            ['specification' => 'ceiling', 'value' => $buildData['ceiling'] ?? '-'],
+            ['specification' => 'fasadeType', 'value' => $buildData['fasadeType'] ?? '-'],
+            ['specification' => 'fence', 'value' => $buildData['fence'] ?? '-'],
+            ['specification' => 'groundMeasurement', 'value' => $buildData['groundMeasurement'] ?? '-'],
+            ['specification' => 'propertyBorderSetting', 'value' => $buildData['propertyBorderSetting'] ?? '-'],
+            ['specification' => 'paving', 'value' => $buildData['paving'] ?? '-'],
+            ['specification' => 'lawn', 'value' => $buildData['lawn'] ?? '-'],
+            ['specification' => 'furnitureSet', 'value' => $buildData['furnitureSet'] ?? '-'],
+            ['specification' => 'foundationType', 'value' => $buildData['foundationType'] ?? '-'],
+            ['specification' => 'heatingType', 'value' => $buildData['heatingType'] ?? '-'],
+            ['specification' => 'heatingFloor', 'value' => $buildData['heatingFloor'] ?? '-'],
+            ['specification' => 'heatingWalls', 'value' => $buildData['heatingWalls'] ?? '-'],
+            ['specification' => 'heatingCeiling', 'value' => $buildData['heatingCeiling'] ?? '-'],
+            ['specification' => 'ventilation', 'value' => $buildData['ventilation'] ?? '-'],
+            ['specification' => 'airFilter', 'value' => $buildData['airFilter'] ?? '-'],
+            ['specification' => 'centralFilter', 'value' => $buildData['centralFilter'] ?? '-'],
+            ['specification' => 'waterFilter', 'value' => $buildData['waterFilter'] ?? '-'],
+            ['specification' => 'spotLights', 'value' => $buildData['spotLights'] ?? '-'],
+            ['specification' => 'ledPanels', 'value' => $buildData['ledPanels'] ?? '-'],
+            ['specification' => 'buildProject', 'value' => $buildData['buildProject'] ?? '-'],
+            ['specification' => 'buildPermission', 'value' => $buildData['buildPermission'] ?? '-'],
+            ['specification' => 'commisioning', 'value' => $buildData['commisioning'] ?? '-'],
+            ['specification' => 'garage', 'value' => $buildData['garage'] ?? '-'],
+            ['specification' => 'parking', 'value' => $buildData['parking'] ?? '-'],
+            ['specification' => 'gates', 'value' => $buildData['gates'] ?? '-'],
+            ['specification' => 'securitySystem', 'value' => $buildData['securitySystem'] ?? '-'],
+            ['specification' => 'sensors', 'value' => $buildData['sensors'] ?? '-'],
+            ['specification' => 'wallLights', 'value' => $buildData['wallLights'] ?? '-'],
+            ['specification' => 'roadLights', 'value' => $buildData['roadLights'] ?? '-'],
+            ['specification' => 'groundLights', 'value' => $buildData['groundLights'] ?? '-'],
+            ['specification' => 'doorType', 'value' => $buildData['doorType'] ?? '-'],
+            ['specification' => 'windowType', 'value' => $buildData['windowType'] ?? '-'],
+            ['specification' => 'design', 'value' => $buildData['design'] ?? '-'],
+            ['specification' => 'roofType', 'value' => $buildData['roofType'] ?? '-'],
+            ['specification' => 'wallsFinish', 'value' => $buildData['wallsFinish'] ?? '-'],
+            ['specification' => 'housePlan', 'value' => $buildData['housePlan'] ?? '-'],
+        ];
+        
+        //Dati tiek formatēti vieglākai pievienošanai datubāzē un cenai tiek pievienota eiro zīme 
+        $specifications = Session::get('specifications', []);
+        foreach ($specifications as $specification) {
+            $items[] = [
+                'specification' => $specification['name'],
+                'value' => $specification['price'] . '€',
+            ];
+        }
+        
+        //Pievieno būves izmaksas datubāzē (tikai reģistrētiem lietotājiem)
+        if (Auth::check()) {
+        foreach ($items as $item) {
+            BuildItem::create([
+                'buildID' => $build->id,
+                'specification' => $item['specification'],
+                'value' => $item['value'],
+            ]);
+        }
+    }
+    
+        return view('results', ['build' => $buildData, 'totalCost' => $totalCost, 'user' => $user]);
+    }
 
 }

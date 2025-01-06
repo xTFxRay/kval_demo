@@ -41,7 +41,7 @@
     }
 
     input[type="text"], input[type="number"] {
-        width: calc(100% - 120px); 
+        width: 257px; 
         background-color: #f9f9f9;
         color: #333;
         border: 1px solid #ccc;
@@ -76,6 +76,21 @@
 <body>
     <div class="black"></div>
     <div class="form-container">
+        <div class="mt-5">
+            @if($errors->any())
+                <div class="col-12">
+                    @foreach($errors->all() as $error)
+                        <div class="alert error">{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
+        
+            @if(session()->has('error'))
+                <div class="alert error">
+                    {{ session('error') }}
+                </div>
+            @endif
+        </div>
         <h2>Pievienojiet specifikāciju Jūsu mājoklim</h2>
         
         <form action="{{ route('addSpecification') }}" method="POST" id="specificationForm">

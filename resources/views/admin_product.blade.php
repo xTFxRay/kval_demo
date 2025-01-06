@@ -88,14 +88,17 @@
             padding: 8px 15px;
             background-color: green;
             color: white;
-            text-decoration: none;
+            text-decoration: none !important;
             text-align: center;
             border-radius: 4px;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
+        .action-link:hover {
+            background-color: #45a049; 
+            text-decoration: none;
+        }
 
     </style>
 </head>
@@ -126,11 +129,6 @@
                     <hr>
                     
                     @if (Auth::check())
-                        <a href="{{ route('edit') }}" class="menu-link">
-                            <i class="fa-solid fa-user-pen"></i>
-                            <p>Rediģēt profilu</p>
-                            <span>></span>
-                        </a>
                         <a href="{{ route('logout') }}" class="menu-link">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <p>Izrakstīties</p>
@@ -162,6 +160,20 @@
     </header>
     <div class="overlay1">
         <div class="page_title">
+            @if ($errors->any())
+                <div class="alert alert-danger" style="color: red;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            {{ $error }}
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
             <h1>Produkti</h1>
             <a href="{{ route('product_create') }}" class="action-link">Pievienot produktu</a>
         </div>

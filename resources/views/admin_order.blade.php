@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulators</title>
+    <title>Pasūtījumi</title>
     <link rel="stylesheet" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" 
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" 
@@ -18,8 +18,7 @@
         }
         body {
             background-image: url("../images/bricks.png");
-            background-size:cover;
-            background-position: center;
+            background-position: cover;
             background-repeat: no-repeat;
             height: 100vh; 
             display: flex;
@@ -88,14 +87,17 @@
             padding: 8px 15px;
             background-color: green;
             color: white;
-            text-decoration: none;
+            text-decoration: none !important;
             text-align: center;
             border-radius: 4px;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-
+        .action-link:hover {
+            background-color: #45a049; 
+            text-decoration: none;
+        }
 
     </style>
 </head>
@@ -126,11 +128,6 @@
                     <hr>
                     
                     @if (Auth::check())
-                        <a href="{{ route('edit') }}" class="menu-link">
-                            <i class="fa-solid fa-user-pen"></i>
-                            <p>Rediģēt profilu</p>
-                            <span>></span>
-                        </a>
                         <a href="{{ route('logout') }}" class="menu-link">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <p>Izrakstīties</p>
@@ -162,6 +159,20 @@
     </header>
     <div class="overlay1">
         <div class="page_title">
+            @if ($errors->any())
+                <div class="alert alert-danger" style="color: red;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            {{ $error }}
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
             <h1>Pasūtījumi</h1>
         </div>
         <div class="content">
@@ -189,11 +200,11 @@
                             <td>{{ $order->card_number }}</td>
                             <td>{{ number_format($order->total_amount, 2) }} €</td>
                             <td>
-                                <a href="{{ route('order_edit', $order->id) }}" class="action-link">Edit</a>
+                                <a href="{{ route('order_edit', $order->id) }}" class="action-link">Rediģēt</a>
                                 <form action="{{ route('order_delete', $order->id) }}" method="POST" style="display:inline-block;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="action-link" onclick="return confirm('Are you sure you want to delete this order?')">Delete</button>
+                                    <button type="submit" class="action-link" onclick="return confirm('Vai tiešām vēlaties dzēst šo pasūtījumu')">Dzēst</button>
                                 </form>
                             </td>
                         </tr>

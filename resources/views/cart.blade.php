@@ -104,7 +104,6 @@
         margin-bottom: 20px;
         color: #333;
     }
-
     .cart-summary a button {
         color: white;
         border: none;
@@ -124,7 +123,12 @@
 @section('content')
 <div class="cart_container">
     <h1>Jūsu grozs</h1>
-
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+    
     @if($cart && $cart->items->isNotEmpty())
         <div class="cart-items">
             @foreach($cart->items as $item)
@@ -145,7 +149,7 @@
 
         <div class="cart-summary">
             <p>Kopā: {{ number_format($totalPrice, 2) }}€</p>
-            <a href="{{ route('verify') }}"><button>Pasūtīt</button></a>
+            <a href="{{ route('checkout') }}"><button>Pasūtīt</button></a>
             <a href="{{ route('store') }}"><button>Atgriezties veikalā</button></a>
         </div>
     @else
@@ -153,8 +157,10 @@
         <a href="{{ route('store') }}"><button>Atgriezties veikalā</button></a>
     @endif
 </div>
-@endsection
 
 @push('scripts')
 <script src="{{ asset('js/app.js') }}"></script>
 @endpush
+@endsection
+
+

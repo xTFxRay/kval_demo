@@ -65,7 +65,7 @@
             width: 100%;
             padding: 10px;
             margin-top: 20px;
-            background-color: #4CAF50;
+            background-color: green;
             color: white;
             border: none;
             border-radius: 4px;
@@ -80,9 +80,10 @@
 
         .back-button {
             display: inline-block;
+            font-family:sans-serif;
             margin-top: 20px;
             color: white;
-            background-color: #4CAF50;
+            background-color: green;
             text-decoration: none;
             padding: 10px 20px;
             border-radius: 4px;
@@ -92,7 +93,20 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        
+        .back-button:hover {
+            background-color: #45a049;
+        }
+
+
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -104,23 +118,57 @@
             
                 <div class="page_title">
                     <h1>Rediģēt Lietotāju</h1>
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="color: red;">
+                            <ul>
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}
+                            @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    @if (session('success'))
+                        <div class="alert alert-success" style="color: white;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                 </div>
                 <div class="content">
-                    <form action="{{ route('user_save', $user->id) }}" method="POST">
+                    <form action="{{ route('user_save', $user->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('POST')
+                        
                         <label for="name">Vārds:</label>
                         <input type="text" name="name" value="{{ $user->name }}" required>
+                    
+                        <label for="surname">Uzvārds:</label>
+                        <input type="text" name="surname" value="{{ $user->surname }}" required>
+                    
                         <label for="email">Ēpasts:</label>
                         <input type="email" name="email" value="{{ $user->email }}" required>
+                    
+                        <label for="phone">Tālrunis:</label>
+                        <input type="text" name="phone" value="{{ $user->phone }}" required>
+                    
+                        <label for="password">Parole:</label>
+                        <input type="password" name="password">
+                    
+                        <label for="password_confirmation">Apstiprināt paroli:</label>
+                        <input type="password" name="password_confirmation">
+                    
                         <label for="role">Loma:</label>
                         <select name="role" required>
-                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="user" {{ $user->role == 'user' ? 'selected' : '' }}>Lietotājs</option>
+                            <option value="admin">Admin</option>
+                            <option value="user">Lietotājs</option>
                         </select>
+                    
+                        <label for="photo">Foto:</label>
+                        <input type="file" name="photo" accept="image/*">
+                    
                         <button type="submit">Atjaunināt lietotāju</button>
                         <a href="{{ route('users') }}" class="back-button">Atpakaļ</a>
                     </form>
+                    
                 </div>
             
             

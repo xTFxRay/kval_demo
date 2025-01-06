@@ -41,7 +41,7 @@
         .button-link {
             display: inline-block;
             width: 90%;
-            background-color: #4CAF50; 
+            background-color: green; 
             color: white;
             text-align: center;
             padding: 10px 20px;
@@ -56,6 +56,7 @@
 
         .button-link:hover {
             background-color: #45a049; 
+            text-decoration: none;
         }
     </style>
 </head>
@@ -110,14 +111,14 @@
             <h3>Mājas drošības risinājumi</h3>
             <label for="drosibas-sistema">Drošības sistēmas:</label>
             <select id="drosibas-sistema" name="drosibas-sistema">
-                <option value="no">-</option>
+                <option value="Nē">-</option>
                 <option value="Signalizācijas sistēma">Signalizācijas sistēma</option>
                 <option value="Videonovērošanas sistēma">Videonovērošanas sistēma</option>
             </select>
 
             <label for="sensori">Sensori:</label>
             <select id="sensori" name="sensori">
-                <option value="no">-</option>
+                <option value="Nē">-</option>
                 <option value="Kustības kamera">Kustības sensori</option>
                 <option value="Dūmu detektors">Dūmu detektori</option>
             </select>

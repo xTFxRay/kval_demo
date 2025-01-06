@@ -71,6 +71,10 @@
         .edit, .logout {
             display: inline-block;
             margin: 10px 0;
+            background-color: black;
+        }
+        .logout{
+            margin-top: 31px;
         }
         .logout{
             width: 50%;
@@ -136,11 +140,37 @@
             <div class="step-title">Rezultāti</div>
         </div>
     </div>
+ 
+    @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
+
+    @if($errors->any())
+        <div class="col-12">
+            @foreach($errors->all() as $error)
+                <div class="alert error">{{ $error }}</div>
+            @endforeach
+        </div>
+    @endif
+        
+    @if(session()->has('error'))
+        <div class="alert error">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="content">
         <div class="left">
             <h2>Moduļu mājas kalkulators</h2>
-            <p>Šis ir moduļu mājas cenu kalkulators. Nospiežot sākt Jums tiks uzdoti jautājumi saistībā ar Jums vēlamo mājas komplektāciju un beigās tiks izveidots aptuvens cenu aprēķins Jums tīkamai moduļu mājai. Lai sākt izvēlaties mājas izmēra diapazonu (m2) un nospiediet sākt.</p>
+            <p>Šis ir moduļu mājas cenu kalkulators. 
+            Nospiežot sākt Jums tiks uzdoti jautājumi saistībā ar Jums vēlamo mājas komplektāciju
+            un beigās tiks izveidots aptuvens cenu aprēķins Jums tīkamai moduļu mājai. 
+            Lai sākt izvēlaties mājas izmēra diapazonu (m2) un nospiediet sākt.</p>
+            @auth
+                <a href="{{ route('editPrices') }}" class="edit">Rediģēt cenas</a>
+            @endauth
         </div>
         <div class="right">
             <form action="{{ route('layout') }}" method="get" class="area">
@@ -154,9 +184,7 @@
 
                 <input type="submit" value="Sākt">
             </form>
-            @auth
-                <a href="{{ route('editPrices') }}" class="edit">Rediģēt cenas</a>
-            @endauth
+            
             <a href="{{ route('home') }}" class="logout button">Atpakaļ</a>
         </div>
     </div>

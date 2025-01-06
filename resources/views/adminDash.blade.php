@@ -53,6 +53,22 @@
             
         }
 
+        .background_photo {
+            position: relative;
+            background-image: url('/images/background_photo.jpg');
+            background-size: cover; 
+            background-position: center; 
+            height: 55vh;
+            width: 60%;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            margin-right: auto;
+            margin-left: auto;
+            margin-top: 100px;
+        }
+
     </style>
 </head>
 <body>
@@ -82,11 +98,6 @@
                     <hr>
                     
                     @if (Auth::check())
-                        <a href="{{ route('edit') }}" class="menu-link">
-                            <i class="fa-solid fa-user-pen"></i>
-                            <p>Rediģēt profilu</p>
-                            <span>></span>
-                        </a>
                         <a href="{{ route('logout') }}" class="menu-link">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <p>Izrakstīties</p>
@@ -117,10 +128,11 @@
         
     </header>
     <div class="admin_overlay"></div>
-    <div class="content">
-        <h2>Izvēlieties sadaļu lai iegūtu datus</h2>
-    </div>
-
+        <div class="background_photo">
+            <div class="content">
+                <h1>Sveiki! {{ Auth::user()->name }}</h1>
+            </div>
+        </div>
 
 <script src="{{ asset('js/app.js') }}"></script>
 </body>

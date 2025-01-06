@@ -67,7 +67,7 @@
             width: 100%;
             padding: 10px;
             margin-top: 20px;
-            background-color: #4CAF50;
+            background-color: green;
             color: white;
             border: none;
             border-radius: 4px;
@@ -84,16 +84,19 @@
             display: inline-block;
             margin-top: 20px;
             color: white;
-            background-color: #4CAF50;
+            background-color: green;
             text-decoration: none;
             padding: 10px 20px;
+            font-family:sans-serif;
             border-radius: 4px;
             text-align: center;
             cursor: pointer;
             width: 90%;
             transition: background-color 0.3s, color 0.3s;
         }
-
+        .back-button:hover {
+            background-color: #45a049;
+        }
         
     </style>
 </head>
@@ -107,26 +110,55 @@
        
             <div class="page_title">
                 <h1>Pievienot Lietotāju</h1>
+                @if ($errors->any())
+                    <div class="alert alert-danger" style="color: red;">
+                        <ul>
+                        @foreach ($errors->all() as $error)
+                            {{ $error }}
+                        @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success" style="color: white;">
+                        {{ session('success') }}
+                    </div>
+                @endif
             </div>
             <div class="content">
-                <form action="{{ route('user_store') }}" method="POST">
+                <form action="{{ route('user_store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <label for="name">Vārds:</label>
                     <input type="text" name="name" required>
+                
+                    <label for="surname">Uzvārds:</label>
+                    <input type="text" name="surname" required>
+                
                     <label for="email">Ēpasts:</label>
                     <input type="email" name="email" required>
+                
+                    <label for="phone">Tālrunis:</label>
+                    <input type="text" name="phone" required>
+                
                     <label for="password">Parole:</label>
                     <input type="password" name="password" required>
+                
                     <label for="password_confirmation">Apstiprināt paroli:</label>
                     <input type="password" name="password_confirmation" required>
+                
                     <label for="role">Loma:</label>
                     <select name="role" required>
                         <option value="admin">Admin</option>
                         <option value="default_user">Lietotājs</option>
                     </select>
+                
+                    <label for="photo">Foto:</label>
+                    <input type="file" name="photo" accept="image/*">
+                
                     <button type="submit">Pievienot lietotāju</button>
                     <a href="{{ route('users') }}" class="back-button">Atpakaļ</a>
                 </form>
+                
             </div>
         
             

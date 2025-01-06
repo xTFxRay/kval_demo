@@ -5,7 +5,32 @@
 @section('content')
     <div class="text-overlay">
         <div class="overlay1"></div>
+        
         <div class="text1">
+            
+            <div class="mt-5">
+                @if (session('error'))
+                    <div class="alert alert-danger" style="color: red;">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger" style="color: red;">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success" style="color: white;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+            </div>
+            
+        
             <h2 style="text-align: center; color: white; margin-bottom: 20px;">Rediģēt lietotāja iestatījumus</h2>
             <form action="{{ route('update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -35,6 +60,11 @@
                     <label for="password">Parole</label>
                     <input type="password" id="password" name="password">
                     <small>Atstājiet tukšu ja nevēlaties mainīt paroli</small>
+                </div>
+
+                <div class="edit">
+                    <label for="password_confirmation">Apstipriniet Paroli</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation">
                 </div>
 
                 <div class="edit">
@@ -77,7 +107,7 @@
             background-color: rgba(0, 0, 0, 0.7);
             border-radius: 15px;
             padding: 40px;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .text-area h1, .text-area p {

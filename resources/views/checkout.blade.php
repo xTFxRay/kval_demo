@@ -22,7 +22,6 @@
         }
         .checkout_container h1 {
             font-size: 28px;
-            margin-bottom: 20px;
             color: #333;
             text-align: center;
         }
@@ -53,6 +52,8 @@
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            display: block;
+            margin: 0 auto;
         }
         .checkout-form button:hover {
             background-color: #218838;
@@ -60,13 +61,30 @@
         h2{
             margin-bottom: 10px;
         }
+
     </style>
 
 
 @section('content')
 <div class="checkout_container">
+    @if (session('error'))
+        <div class="alert alert-danger" style="color: red;">
+            {{ session('error') }}
+        </div>
+    @endif
+    @if ($errors->any())
+        <div style="color: red;">
+                @foreach ($errors->all() as $error)
+                    <ul>{{ $error }}</ul>
+                @endforeach
+        </div>
+    @endif
+    @if (session('success'))
+        <div style="color: black;">
+            {{ session('success') }}
+        </div>
+    @endif
     <h1>Pasūtījums</h1>
-
     <div class="order-summary">
         @if($cart && $cart->items->isNotEmpty())
             @foreach($cart->items as $item)
@@ -83,20 +101,20 @@
         @csrf
         <h2>Apmaksas un piegādes informācija</h2>
         <label for="name">Vārds</label>
-        <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required>
+        <input type="text" name="name" id="name" value="{{ old('name', Auth::user()->name) }}" required readonly>
 
         <input type="hidden" name="userID" value="{{ Auth::user()->id }}">
 
         <label for="email">Ē-pasts</label>
-        <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required>
+        <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" required readonly>
 
-        <label for="address">Piegādes adrese</label>
+        <label for="address">Piegādes adrese (piem: Rīga, Raiņa Bulvāris 19)</label>
         <textarea name="address" id="address" rows="3" required></textarea>
 
         <label for="payment">Apmaksas metode</label>
         <select name="payment" id="payment" required onchange="toggleCardNumberField()">
-            <option value="credit_card">Kredītkarte</option>
             <option value="on_delivery">Apmaksa saņemšanas brīdī</option>
+            <option value="credit_card">Kredītkarte</option>
         </select>
 
         <div id="credit_card_field" style="display: none;">

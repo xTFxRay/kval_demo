@@ -51,7 +51,7 @@ window.onclick = function (event) {
     if (event.target.id === 'popup') {
         document.getElementById('popup').style.display = 'none';
     }
-};
+}; 
 
 
 

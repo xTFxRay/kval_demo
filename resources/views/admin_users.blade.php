@@ -88,20 +88,40 @@
             padding: 8px 15px;
             background-color: green;
             color: white;
+            text-decoration: none !important;
+            text-align: center;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            
+        }
+
+        .action-link:hover {
+            background-color: #45a049; 
+            text-decoration: none;
+        }
+
+        .delete-link {
+            display: inline-block;
+           margin-top: 20px;
+            background-color: green;
+            color: white;
             text-decoration: none;
             text-align: center;
             border-radius: 4px;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            
         }
-
+      
 
     </style>
 </head>
 <body>
     <header>
-        <a href="{{ route('home') }}" class="logo">ModuļuMājas</a>
+        <a href="{{ route('adminDash') }}" class="logo">ModuļuMājas</a>
 
         <nav>
             <div class = "nav">
@@ -126,11 +146,6 @@
                     <hr>
                     
                     @if (Auth::check())
-                        <a href="{{ route('edit') }}" class="menu-link">
-                            <i class="fa-solid fa-user-pen"></i>
-                            <p>Rediģēt profilu</p>
-                            <span>></span>
-                        </a>
                         <a href="{{ route('logout') }}" class="menu-link">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <p>Izrakstīties</p>
@@ -163,6 +178,23 @@
 
 <div class="overlay1">
     <div class="page_title">
+
+        @if ($errors->any())
+            <div class="alert alert-danger" style="color: red;">
+                <ul>
+                @foreach ($errors->all() as $error)
+                    {{ $error }}
+                @endforeach
+                </ul>
+            </div>
+        @endif
+        
+        @if (session('success'))
+            <div class="alert alert-success" style="color: white;">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <h1>Lietotāji</h1>
         <a href="{{ route('user_create') }}" class="action-link">Pievienot lietotāju</a>
     </div>
@@ -196,7 +228,7 @@
                             <form action="{{ route('user_delete', $user->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Vai tiešām vēlaties dzēst šo lietotāju?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="action-link">Dzēst</button>
+                                <button type="submit" class="delete-link">Dzēst</button>
                             </form>
                         </td>
                     </tr>

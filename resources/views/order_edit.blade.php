@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Login</title>
+    <title>Rediģēt pasūtījumu</title>
     <style>
         .overlay {
             position: absolute;
@@ -11,12 +11,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.7); 
             z-index: 0;
         }
 
         body {
-            background-image: url(../images/bricks.png);
+            background-image: url("{{ asset('images/bricks.png') }}");
             background-size: cover;
             height: 100vh;
             display: flex;
@@ -66,7 +65,7 @@
             width: 100%;
             padding: 10px;
             margin-top: 20px;
-            background-color: #4CAF50;
+            background-color: green;
             color: white;
             border: none;
             border-radius: 4px;
@@ -81,9 +80,10 @@
 
         .back-button {
             display: inline-block;
+            font-family: sans-serif;
             margin-top: 20px;
             color: white;
-            background-color: #4CAF50;
+            background-color: green;
             text-decoration: none;
             padding: 10px 20px;
             border-radius: 4px;
@@ -92,7 +92,9 @@
             width: 90%;
             transition: background-color 0.3s, color 0.3s;
         }
-
+        .back-button:hover{
+             background-color: #45a049;
+        }
         
     </style>
 </head>
@@ -102,9 +104,22 @@
 
     <div class="form-container">
             
-            
-        <h1>Rediģēt Pasūtījumu</h1>
+        @if ($errors->any())
+            <div class="alert alert-danger" style="color: red;">
+                <ul>
+                @foreach ($errors->all() as $error)
+                    {{ $error }}
+                @endforeach
+                </ul>
+            </div>
+        @endif
+        @if (session('success'))
+            <div class="alert alert-success" style="color: white;">
+                {{ session('success') }}
+            </div>
+        @endif
 
+        <h1>Rediģēt Pasūtījumu</h1>
         <form action="{{ route('order_save', $order->id) }}" method="POST">
             @csrf
             <div>
@@ -121,11 +136,14 @@
             </div>
             <div>
                 <label for="payment_method">Apmaksas veids:</label>
-                <input type="text" id="payment_method" name="payment_method" value="{{ old('payment_method', $order->payment_method) }}" required>
+                <select id="payment_method" name="payment_method" required>
+                    <option value="on_delivery" {{ old('payment_method', $order->payment_method) == 'on_delivery' ? 'selected' : '' }}>Apmaksas piegādes brīdī</option>
+                    <option value="credit_card" {{ old('payment_method', $order->payment_method) == 'credit_card' ? 'selected' : '' }}>Kredītkarte</option>
+                </select>
             </div>
             <div>
                 <label for="card_number">Kartes numurs:</label>
-                <input type="text" id="card_number" name="card_number" value="{{ old('card_number', $order->card_number) }}" required>
+                <input type="text" id="card_number" name="card_number" value="{{ old('card_number', $order->card_number) }}">
             </div>
             <div>
                 <label for="total_amount">Kopējā summa:</label>

@@ -39,7 +39,7 @@
         .button-link {
             display: inline-block;
             width: 90%;
-            background-color: #4CAF50; 
+            background-color: green; 
             color: white;
             text-align: center;
             padding: 10px 20px;
@@ -54,6 +54,7 @@
 
         .button-link:hover {
             background-color: #45a049; 
+            text-decoration: none;
         }
 </style>
 <body>
@@ -87,7 +88,7 @@
                 <select id="apsildes-veids" name="apsildes-veids">
                     <option value="Bez">Bez</option>
                     <option value="Gāzes katls">Gāzes apkure</option>
-                    <option value="Siltumsūknis">Siltumsūknis (gaisa-ūdens, zemes)</option>
+                    <option value="Siltumsūknis">Siltumsūknis</option>
                     <option value="Apkures katls">Centrālā apkure</option>
                     <option value="Radiators">Radiatori</option>
                 </select>

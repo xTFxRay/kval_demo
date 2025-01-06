@@ -18,8 +18,8 @@
         }
         body {
             background-image: url("../images/bricks.png");
-            background-size:cover;
-            background-position: center;
+            background-size: cover;
+            background-position: cover;
             background-repeat: no-repeat;
             height: 100vh; 
             display: flex;
@@ -57,6 +57,12 @@
                     </div>
                     <hr>
                     @if (Auth::check())
+                    <a href="{{ route('delete') }}" class="menu-link" onclick="return confirm('Vai tiešām vēlaties dzēst savu kontu?')">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <p>Dzēst kontu</p>
+                        <span>></span>
+                    </a>
+                    
                         <a href="{{ route('edit') }}" class="menu-link">
                             <i class="fa-solid fa-user-pen"></i>
                             <p>Rediģēt profilu</p>

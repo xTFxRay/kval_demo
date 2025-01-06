@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
-use App\Models\Product;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ExcelController;
@@ -13,26 +13,41 @@ use App\Http\Controllers\ProductController;
 
 Route::get('/login', [AuthorizationController::class, 'login'] ) -> name('login');
 
+Route::get('/delete', [AuthorizationController::class, 'delete'] ) -> name('delete');
+
 Route::post('/addSpecification', [CalculatorController::class, 'addSpecification'])->name('addSpecification');
 
 Route::post('/updatePrices', [CalculatorController::class, 'updatePrices'])->name('updatePrices');
 
 Route::get('/editPrices', function () {
+
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+    }
+
     $user = Auth::user();
+
+    $materialPrices = Session::get('material_prices', []);
+
     $material_prices = DB::table('products')
         ->select('name', 'price', 'category')
         ->get()
-        ->mapWithKeys(function ($item) {
-            return [$item->name => ['price' => $item->price, 'category' => $item->category]];
+        ->mapWithKeys(function ($item) use ($materialPrices) {
+            $price = isset($materialPrices[$item->name]) ? $materialPrices[$item->name] : $item->price;
+
+            return [$item->name => ['price' => $price, 'category' => $item->category]];
         })
         ->toArray();
-    
+
     return view('editPrices', compact('material_prices', 'user'));
 })->name('editPrices');
 
 
 
 Route::get('/specification', function () {
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+    }
     return view('specification'); 
 })->name('specification');
 
@@ -42,6 +57,9 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/adminDash', function () {
+    if (!Auth::check() || !in_array(Auth::user()->role, ['admin'])) {
+        return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai moderatoriem.');
+    }
     $user = Auth::user(); 
     return view('adminDash', compact('user')); 
 })->name('adminDash');
@@ -65,12 +83,12 @@ Route::get('/modularhouses', function () {
     Route::get('/orders', [AdminController::class, 'admin_order'])->name('orders');
     
     Route::get('/user_create', [AdminController::class, 'user_create'])->name('user_create');
-    Route::get('/user_store', [AdminController::class, 'user_store'])->name('user_store');
+    Route::post('/user_store', [AdminController::class, 'user_store'])->name('user_store');
     
     
     Route::get('/user_edit/{id}', [AdminController::class, 'user_edit'])->name('user_edit');
-    Route::get('/user_save', [AdminController::class, 'user_save'])->name('user_save');
-    Route::delete('/user_delete', [AdminController::class, 'user_delete'])->name('user_delete');
+    Route::post('/user/save/{id}', [AdminController::class, 'user_save'])->name('user_save');
+    Route::delete('/user_delete/{id}', [AdminController::class, 'user_delete'])->name('user_delete');
 
 
     Route::get('/product_edit/{id}', [AdminController::class, 'product_edit'])->name('product_edit');
@@ -104,8 +122,6 @@ Route::get('/faq', function () {
 })->name('faq');
 
 Route::post('/checkout/order', [ProductController::class, 'storeOrder'])->name('order');
-
-Route::get('/verify', [EmailController::class, 'verify'])->name('verify');
 
 Route::post('/verify_code', [EmailController::class, 'verify_code'])->name('verify_code');
 

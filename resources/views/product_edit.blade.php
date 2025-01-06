@@ -67,7 +67,7 @@
             width: 100%;
             padding: 10px;
             margin-top: 20px;
-            background-color: #4CAF50;
+            background-color: green;
             color: white;
             border: none;
             border-radius: 4px;
@@ -82,9 +82,10 @@
 
         .back-button {
             display: inline-block;
+            font-family:sans-serif;
             margin-top: 20px;
             color: white;
-            background-color: #4CAF50;
+            background-color: green;
             text-decoration: none;
             padding: 10px 20px;
             border-radius: 4px;
@@ -94,7 +95,9 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
-        
+        .back-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
@@ -105,6 +108,20 @@
             
             
                 <div class="page_title">
+                    @if ($errors->any())
+                        <div class="alert alert-danger" style="color: red;">
+                            <ul>
+                            @foreach ($errors->all() as $error)
+                                {{ $error }}
+                            @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    @if (session('success'))
+                        <div class="alert alert-success" style="color: white;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     <h1>Rediģēt preci</h1>
                 </div>
                 <div class="content">
@@ -122,7 +139,16 @@
                         <input type="number" name="price" value="{{ $product->price }}" step="0.01" required>
                     
                         <label for="category">Kategorija:</label>
-                        <input type="text" name="category" value="{{ $product->category }}">
+                        <select name="category" id="category">
+                            <option value="Apgaismojums">Apgaismojums</option>
+                            <option value="Mēbeles">Mēbeles</option>
+                            <option value="Drošība">Drošība</option>
+                            <option value="Siltinājums">Siltinājums</option>
+                            <option value="Durvis">Durvis</option>
+                            <option value="Logi">Logi</option>
+                            <option value="Interjers">Interjers</option>
+                            <option value="Jumta Segums">Jumta Segums</option>
+                        </select>
                     
                         <label for="image">Foto:</label>
                         <input type="file" name="image">

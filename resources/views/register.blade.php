@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration</title>
+    <title>Lietotāja reģistrācija</title>
     <style>
          body {
             background-image: url(../images/bricks.png);
@@ -100,46 +100,56 @@
 <body>
     
     <div class="overlay"></div>
-
     <div class="form-container">
         <div class="mt-5">
-            @if($errors->any())
-                <div class= "col-12">
-                    @foreach($erorrs->all() as $error)
-                        <div class= "alert">{{$error}}</div>
-                    @endforeach
+          
+            @if (session('error'))
+                <div class="alert alert-danger" style="color: red;">
+                    {{ session('error') }}
                 </div>
             @endif
-        
 
-            @if(@session()->has('error'))
-                <div class= "alert">{{session('error')}}</div>
+            @if ($errors->any())
+                <div class="alert alert-danger" style="color: red;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
-            @if(@session()->has('success'))
-                <div class= "alert-success">{{session('success')}}</div>
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
             @endif
 
         </div>
 
         <h2>Lietotāja reģistrācija</h2>
-        <form id="registrationForm" action="{{route('register.post')}}" method="POST">
+        <form id="registrationForm" action="{{route('register.post')}}" method="POST" enctype="multipart/form-data">
             @csrf
             <label for="name">Vārds:</label>
-            <input type="text" id="name" name="name">
+            <input type="text" id="name" name="name" required maxlength="">
 
             <label for="surname">Uzvārds:</label>
-            <input type="text" id="surname" name="surname">
+            <input type="text" id="surname" name="surname" required>
 
             <label for="email">Ēpasts:</label>
-            <input type="email" id="email" name="email">
+            <input type="email" id="email" name="email" required>
             
             <label for="phone">Telefons:</label>
             <input type="tel" id="phone" name="phone" pattern="[0-9]{8,14}">
-            <div class="error-message" id="phoneError"></div>
             
             <label for="password">Parole:</label>
             <input type="password" id="password" name="password" minlength="7" required>
-            <div class="error-message" id="passwordError"></div>
+
+            <label for="password_confirmation">Apstipriniet Paroli:</label>
+            <input type="password" id="password_confirmation" name="password_confirmation" minlength="7" required>
+
+            <label for="profile_picture">Profila Bilde:</label>
+            <input type="file" id="profile_picture" name="profile_picture">
+            
 
             <input type="submit" value="Turpināt">
         </form>

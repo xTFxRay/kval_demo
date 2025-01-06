@@ -11,11 +11,16 @@ use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Cart;
 use App\Models\CartItem;
+use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
 {
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+        }
+
         $query = Product::query();
 
         if ($request->has('category') && $request->category !== 'Visi') {
@@ -50,6 +55,11 @@ class ProductController extends Controller
     }
 
     public function show($id) {
+
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+        }
+
         $product = Product::findOrFail($id);
         $user = Auth::user(); 
    
@@ -58,16 +68,23 @@ class ProductController extends Controller
 
     public function addToCart($id)
 {
+    //Iegūst pašreizējā lietotāja ID un pievienojamās preces ID
     $user = Auth::user();
     $product = Product::findOrFail($id);
 
+    //Iegūst (vai ja groza nav izveido) grozu
     $cart = Cart::firstOrCreate(
-        ['user_id' => $user->id], 
-        ['total_price' => 0]     
+        ['user_id' => $user->id, 'status' => 'active'], 
+        ['total_price' => 0]
     );
 
-    $cartItem = CartItem::where('cart_id', $cart->id)->where('product_id', $id)->first();
+    //Pārbauda vai šī prece jau ir grozā.
+    $cartItem = CartItem::where('cart_id', $cart->id)
+        ->where('product_id', $id)
+        ->first();
 
+    //Ja ir palielina tās daudzumu  
+    //Ja nē pievieno to grozam  
     if ($cartItem) {
         $cartItem->quantity += 1;
         $cartItem->save();
@@ -80,21 +97,29 @@ class ProductController extends Controller
         ]);
     }
 
-    $cart->total_price = CartItem::where('cart_id', $cart->id)->sum(\DB::raw('quantity * price'));
+    //Palielina kopējo groza cenu par nepieciešamo daudzumu
+    $cart->total_price = CartItem::where('cart_id', $cart->id)
+        ->sum(\DB::raw('quantity * price'));
     $cart->save();
 
-    return redirect()->route('store');
+    return redirect()->route('store')->with('success', 'Prece pievienota grozam!');
 }
 
 
 
 public function viewCart()
 {
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+    }
+
     $user = Auth::user(); 
 
     $cart = Cart::with('items.product')
-        ->where('user_id', $user->id)
-        ->first();
+    ->where('user_id', $user->id)
+    ->where('status', 'active') 
+    ->first();
+
 
     if (!$cart) {
         $cart = Cart::create([
@@ -120,10 +145,11 @@ public function viewCart()
     public function removeFromCart($id)
 {
     $user = Auth::user();
-    $cart = Cart::where('user_id', $user->id)->first();
-
+    $cart = Cart::where('user_id', $user->id)
+    ->where('status', 'active')->first(); 
+ 
     if (!$cart) {
-        return redirect()->route('cart')->with('error', 'Cart not found.');
+        return redirect()->route('cart')->with('error', 'Grozs nav atrasts!');
     }
     $cartItem = CartItem::where('cart_id', $cart->id)->where('product_id', $id)->first();
    
@@ -133,25 +159,28 @@ public function viewCart()
         $cart->total_price = CartItem::where('cart_id', $cart->id)->sum(\DB::raw('quantity * price'));
         $cart->save();
 
-        return redirect()->route('cart');
     }
 
-    return redirect()->route('cart');
+    return redirect()->route('cart')->with('success', 'Prece dzēsta!');
 }
     
 public function checkout()
-{
+{   
+    if (!Auth::check()) {
+        return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
+    }
+
+
     $totalPrice = 0;
     $user = Auth::user();
-
+    
     $cart = Cart::with('items.product')->where('user_id', $user->id)->where('status', 'active')->first();
-
     if (!$cart) {
-        return view('checkout', ['message' => 'Your cart is empty or not found.']);
+        return view('checkout', ['message' => 'Notikusi kļūda']);
     }
 
     if ($cart->items->isEmpty()) {
-        return view('checkout', ['message' => 'Your cart is empty or contains no items.']);
+        return view('checkout', ['message' => 'Jūsu grozs ir tukšs']);
     }
 
     foreach ($cart->items as $item) {
@@ -160,18 +189,28 @@ public function checkout()
         }
     }
 
-    $totalPrice += 5.00;
-
+    $totalPrice += 5.00; //Fiksēta cena par piegādi
     return view('checkout', compact('totalPrice', 'user', 'cart'));
 }
 
 
 
+
+
 public function storeOrder(Request $request)
 {
+
+    //Pārbauda vai adrese atbilst formātam (piem. Rīga, Raiņa Bulvāris 19)
+    if (!preg_match('/^[A-Za-zĀ-žā-ž]+(?:,\s[A-Za-zĀ-žā-ž\s0-9]+)+$/', $request->address)) {
+        return redirect()->back()->withErrors(['error' => 'Adrese nav derīga.']);
+    }
+    
+    //Noņem komatus kuri izmantoti lai atdalītu tūkstošus veikala skatā (piem. 1,115.49)
     $totalAmount = str_replace(',', '', $request->input('total_amount'));
     $request->merge(['total_amount' => $totalAmount]);
     
+
+
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'userID' => 'required|exists:users,id',
@@ -182,12 +221,15 @@ public function storeOrder(Request $request)
         'total_amount' => 'required|numeric|min:0',
     ]);
 
+    //Iegūst lietotāja pēdējo aktīvo grozu
     $cart = Cart::where('user_id', $validated['userID'])->where('status', 'active')->first();
 
+
     if (!$cart) {
-        return redirect()->route('store')->with('error', 'Your cart is empty or no active cart found.');
+        return redirect()->route('store')->with('error', 'Grozs ir tukšs vai nav atrasts!');
     }
 
+    //Izveido jaunu ierakstu Order tabulā izmantojot iegūtos datus
     $order = Order::create([
         'name' => $validated['name'],
         'user_id' => $validated['userID'],
@@ -199,6 +241,8 @@ public function storeOrder(Request $request)
         'cart_id' => $cart->id, 
     ]);
 
+    
+    //Iegūst grozā esošo preču ID lai samazinātu to atlikušo daudzumu datubāzē
     $cartItems = CartItem::where('cart_id', $cart->id)->get();
 
     foreach ($cartItems as $item) {
@@ -207,7 +251,7 @@ public function storeOrder(Request $request)
         $product->save();
     }
 
-
+    //Deaktivizē lietotāja grozu (jo ir veikts pasūtījums) un izveido jaunu
     $cart->status = 'completed';
     $cart->save();
 
@@ -217,9 +261,12 @@ public function storeOrder(Request $request)
         'total_price' => 0,
     ]);
 
+
+    //Inicializē e-pasta nosūtīšanu uz lietotāja e-pastu izmantojot iepriekš izveidotu paraugu
     Mail::to($validated['email'])->send(new OrderConfirmation($order));
 
-    return redirect()->route('store')->with('success', 'Pasūtījums izveidots veiksmīgi! Jūsu pasūtijuma Nr: ' . $order->id);
+    
+    return redirect()->route('store')->with('success', 'Pasūtījums izveidots veiksmīgi! Jūsu pasūtījuma Nr: ' . $order->id);
 }
 
 }

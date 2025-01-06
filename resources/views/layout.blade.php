@@ -78,7 +78,7 @@ body {
         .button-link {
             display: inline-block;
             width: 93%;
-            background-color: #4CAF50; 
+            background-color: green; 
             color: white;
             text-align: center;
             padding: 10px 20px;
@@ -93,11 +93,27 @@ body {
 
         .button-link:hover {
             background-color: #45a049; 
+            text-decoration: none;
         }
 </style>
 <body>
 <div class="black"></div>
 <div class="calculator-container">
+    <div class="mt-5">
+        @if($errors->any())
+            <div class="col-12">
+                @foreach($errors->all() as $error)
+                    <div class="alert error">{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
+    
+        @if(session()->has('error'))
+            <div class="alert error">
+                {{ session('error') }}
+            </div>
+        @endif
+    </div>
     <h2>Izvēlieties mājas plānu</h2>
     <p>Lūdzu izvēlieties vienu no zemāk minētajiem mājas plāniem, kas atbilst jūsu izvēlētajam platībai:</p>
 
@@ -119,7 +135,7 @@ body {
             @endforeach
         </div>
 
-        <h3>Aprēķinātās izmaksas: <span>{{ $totalCost ?? 0 }}</span>€</h3>
+        
 
 
         <input type="submit" value="Turpināt">

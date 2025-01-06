@@ -4,53 +4,51 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 
 class EmailController extends Controller
 {
-    public function verify(Request $request)
-    {
-        $verificationCode = rand(100000, 999999);
-        Session::put('verification_code', $verificationCode);
-        $user = Auth::user(); 
-
-        Mail::send('emails.verificationemail', ['code' => $verificationCode], function ($message) use ($user) {
-            $message->to($user->email)
-                ->subject('Your Verification Code');
-        });
-
-        return view('verification',compact( 'user'));
-    }
-
-
+   
     public function verify_code(Request $request)
 {
-
-    $totalPrice = 0;
-    $cart = session('cart');
-    if ($cart) {
-        foreach ($cart as $item) {
-            $totalPrice += $item['price'] * $item['quantity'];
-        }
-    }
-
     $request->validate([
-        'code' => 'required|digits:6',
+        'code' => 'required|numeric',
     ]);
 
     $storedCode = session('verification_code'); 
+    
 
-    if ($storedCode && $request->code == $storedCode) {
-        session()->forget('verification_code'); 
-        return redirect()->route('checkout')->with([
-            'totalPrice' => $totalPrice, 
-            'user' => Auth::user() 
-        ]);
+
+    if ($request->code != $storedCode) {
+        return back()->withErrors(['code' => 'Ievadītais kods ir nepareizs. Lūdzu, mēģiniet vēlreiz.']);
     }
 
-    return back()->with('error', 'Invalid verification code. Please try again.');
+
+    $registrationData = session('registration_data');
+    $profilePicturePath=$registrationData['profile_picture'];
+    
+    if ($profilePicturePath) {
+        $profilePicturePath = $request->file('profile_picture')->store('photos', 'public');
+    }
+
+    $user = User::create([
+        'name' => $registrationData['name'],
+        'surname' => $registrationData['surname'],
+        'phone' => $registrationData['phone'],
+        'email' => $registrationData['email'],
+        'password' => $registrationData['password'],
+        'role' => $registrationData['role'],
+        'profile_picture' => $profilePicturePath
+    ]);
+
+    session()->forget('registration_data');
+
+    Auth::login($user);
+
+    return redirect()->route('home', ['user' => $user]);
 }
 
 

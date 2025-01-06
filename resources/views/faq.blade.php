@@ -92,10 +92,6 @@
             justify-content: space-between;
             align-items: center;
         }
-
-        .question h3{
-
-        }
         .answer p{
             padding-top: 16px;
             line-height: 1.5;
@@ -123,7 +119,9 @@
 
             <li><a href="{{ route('home') }}">Sākums</a></li>
             <li><a href="{{ route('modularhouses') }}">Moduļu mājas</a></li>
+            @Auth
             <li><a href="{{ route('store') }}">Būvē pats</a></li>
+            @endauth
             <li><a href="{{ route('faq') }}">FAQ</a></li>
             <li><a href="{{ route('start') }}">Kalkulators</a></li>
 
@@ -140,6 +138,11 @@
                     <hr>
                     
                     @if (Auth::check())
+                        <a href="{{ route('delete') }}" class="menu-link" onclick="return confirm('Vai tiešām vēlaties dzēst savu kontu?')">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <p>Dzēst kontu</p>
+                            <span>></span>
+                        </a>
                         <a href="{{ route('edit') }}" class="menu-link">
                             <i class="fa-solid fa-user-pen"></i>
                             <p>Rediģēt profilu</p>

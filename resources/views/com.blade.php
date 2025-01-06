@@ -32,12 +32,13 @@
         }
         .form-container{
             z-index: 1;
+            margin-top: 20px;
         }
 
         .button-link {
             display: inline-block;
             width: 90%;
-            background-color: #4CAF50; 
+            background-color: green; 
             color: white;
             text-align: center;
             padding: 10px 20px;
@@ -52,6 +53,7 @@
 
         .button-link:hover {
             background-color: #45a049; 
+            text-decoration: none;
         }
     </style>
 </head>

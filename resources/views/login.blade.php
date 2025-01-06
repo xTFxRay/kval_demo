@@ -99,23 +99,24 @@
 
     <div class="form-container">
         <div class="mt-5">
-            @if($errors->any())
-                <div class= "col-12">
-                    @foreach($erorrs->all() as $error)
-                        <div class= "alert">{{$error}}</div>
-                    @endforeach
+            @if (session('error'))
+                <div class="alert alert-danger" style="color: red;">
+                    {{ session('error') }}
                 </div>
             @endif
-        
-
-            @if(session()->has('error'))
-            <div class="alert">
-                {{ session('error') }}
-            </div>
-        @endif
-        
-            @if(@session()->has('success'))
-                <div class= "alert-success">{{session('success')}}</div>
+            @if ($errors->any())
+                <div class="alert alert-danger" style="color: red;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
             @endif
 
         </div>

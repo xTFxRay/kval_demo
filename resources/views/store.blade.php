@@ -147,6 +147,11 @@
                     <hr>
                     
                     @if (Auth::check())
+                        <a href="{{ route('delete') }}" class="menu-link">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <p>Dzēst kontu</p>
+                            <span>></span>
+                        </a> 
                         <a href="{{ route('edit') }}" class="menu-link">
                             <i class="fa-solid fa-user-pen"></i>
                             <p>Rediģēt profilu</p>
@@ -183,11 +188,25 @@
     </header>
        
     <div id="product_container" class="product_container">
-        @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+            @if (session('error'))
+                <div class="alert alert-danger" style="color: red;">
+                    {{ session('error') }}
+                </div>
+            @endif
+            @if ($errors->any())
+                <div class="alert alert-danger" style="color: red;">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
         <div class="filter-options">
             <div class="filter-group">
                 <label for="category">Kategorija:</label>
