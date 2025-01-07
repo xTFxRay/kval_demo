@@ -18,7 +18,7 @@
         }
         body {
             background-image: url("../images/bricks.png");
-            background-position: cover;
+            background-size: cover;
             background-repeat: no-repeat;
             height: 100vh; 
             display: flex;
@@ -169,7 +169,7 @@
                 </div>
             @endif
             @if (session('success'))
-                <div class="alert alert-success">
+                <div class="alert alert-success" style="color: white;">
                     {{ session('success') }}
                 </div>
             @endif

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="/css/main.css" rel="stylesheet">
-    <title>Rezultāti</title>
+    <title>Papildizmaksas</title>
 </head>
 <style>
     body {
@@ -88,6 +88,11 @@
             @if(session()->has('error'))
                 <div class="alert error">
                     {{ session('error') }}
+                </div>
+            @endif
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
                 </div>
             @endif
         </div>

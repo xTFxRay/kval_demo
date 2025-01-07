@@ -19,7 +19,7 @@ class AdminController extends Controller
         if (!Auth::check() || !in_array(Auth::user()->role, ['admin'])) {
             return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai moderatoriem.');
         }
-
+        //Iegūst lietotāajus kuri ir aktīvi
         $user = Auth::user();
         $users = User::where('status', '!=', 'deleted')->get();
         return view('admin_users', compact('user', 'users'));
@@ -61,30 +61,30 @@ public function user_store(Request $request)
         return redirect()->back()->with("error", "Šis e-pasts jau pieder kādam lietotājam.");
     }
     
-
     $request->validate([
         'name' => 'required|string|max:255',
         'surname' => 'required|string|max:255', 
         'email' => 'required|email',
-        'password' => 'required|min:6|confirmed',
-        'role' => 'required|string',
-        'phone' => 'string|max:15', 
+        'password' => 'required|min:8|confirmed',
+        'role' => 'required',
+        'phone' => 'nullable|string|max:15', 
         'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', 
     ]);
 
-    $photoPath = null;
+    //Saglabā attēlu sistēmā
     if ($request->hasFile('photo')) {
-        $photoPath = $request->file('photo')->store('public/photos'); 
+        $path = $request->file('photo')->store('photos', 'public');
+
     }
 
     User::create([
         'name' => $request->name,
         'surname' => $request->surname,
         'email' => $request->email,
-        'password' => bcrypt($request->password),
+        'password' => bcrypt($request->password), //Kriptē paroli
         'role' => $request->role,
         'phone' => $request->phone, 
-        'photo' => $photoPath, 
+        'photo' => basename($path), 
     ]);
     session()->flash('success', 'Lietotājs veiksmīgi pievienots.');
     return redirect()->route('users');
@@ -101,25 +101,26 @@ public function user_edit($id)
 }
 
 public function user_save(Request $request, $id)
-{
+{   
+    
     $request->validate([
         'name' => 'required|string|max:255',
         'surname' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email,' . $id,
-        'role' => 'required|string',
-        'phone' => 'required|string|max:15',
+        'role' => 'required',
+        'phone' => 'nullable|max:15',
         'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         'password' => 'nullable|min:8|confirmed',
     ]);
 
     $user = User::findOrFail($id);
 
-    $photoPath = $user->photo;
+    //Dzēš veco attēlu un saglabā jauno attēlu sistēmā
     if ($request->hasFile('photo')) {
         if ($user->photo) {
             Storage::delete($user->photo);
         }
-        $photoPath = $request->file('photo')->store('public/photos');
+        $path = $request->file('photo')->store('photos', 'public');
     }
 
     $user->update([
@@ -128,11 +129,11 @@ public function user_save(Request $request, $id)
         'email' => $request->email,
         'phone' => $request->phone,
         'role' => $request->role,
-        'photo' => $photoPath,
+        'photo' => basename($path), 
     ]);
 
     if ($request->password) {
-        $user->password = bcrypt($request->password);
+        $user->password = bcrypt($request->password); //Kriptē paroli
         $user->save();
     }
     session()->flash('success', 'Lietotājs veiksmīgi atjaunots.');
@@ -143,8 +144,8 @@ public function user_save(Request $request, $id)
 public function user_delete($id)
 {  
     $user = User::findOrFail($id);
-    $user->status = 'deleted';
-    $user->email = null; 
+    $user->status = 'deleted'; //Logiskā dzēšaana
+    $user->email = null; //Dzēš e-pastu lai to varētu izmantot jauns lietotājs
     $user->save();
     session()->flash('success', 'Lietotājs veiksmīgi dzēsts.');
     return redirect()->route('users');
@@ -177,8 +178,10 @@ public function product_add(Request $request)
     $product->category = $request->category;
     $product->quantity = $request->quantity;
        
+    //Saglabā attēlu sistēmā 
     if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('products', 'public');
+        $path = $request->file('image')->store('images', 'public');
+
         $product->image = $path;
     }
 
@@ -212,12 +215,26 @@ public function product_save(Request $request, $id)
     $product->price = $request->price;
     $product->category = $request->category;
     
+
+    //Dzēš veco attēlu un saglabā jauno attēlu sistēmā 
+    //Savādāk nekā ar lietotāju funkciju jo produktu attēli glabāajas citā mapē kurai nevar pa tiešo izmantot store funkciju
     if ($request->hasFile('image')) {
         if ($product->image) {
-            Storage::delete('public/' . $product->image);
+            $oldImagePath = public_path($product->image);
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
+            }
         }
-        $path = $request->file('image')->store('products', 'public');
-        $product->image = $path;
+    
+        $file = $request->file('image');
+    
+        $destinationPath = public_path('images');
+
+        $fileName = time() . '_' . $file->getClientOriginalName();
+    
+        $file->move($destinationPath, $fileName);
+    
+        $product->image = 'images/' . $fileName;
     }
 
     $product->save();

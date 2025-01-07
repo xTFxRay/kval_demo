@@ -213,6 +213,7 @@
                 <select id="category">
                     <option value="Visi">Visi</option>
                     <option value="Apgaismojums">Apgaismojums</option>
+                    <option value="Apsilde">Apsilde</option>
                     <option value="Mēbeles">Mēbeles</option>
                     <option value="Drošība">Drošība</option>
                     <option value="Siltinājums">Siltinājums</option>

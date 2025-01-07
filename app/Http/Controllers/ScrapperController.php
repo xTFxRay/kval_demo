@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\DomCrawler\Crawler;
 use App\Models\Material_prices;
 
-
+//Šis kods netiek izmantots un netika ņemts vērā arī koda rindiņu skaitīšanas laikā
+//
 class ScrapperController extends Controller
 {
 

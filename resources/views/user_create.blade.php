@@ -138,7 +138,7 @@
                     <input type="email" name="email" required>
                 
                     <label for="phone">Tālrunis:</label>
-                    <input type="text" name="phone" required>
+                    <input type="text" name="phone">
                 
                     <label for="password">Parole:</label>
                     <input type="password" name="password" required>

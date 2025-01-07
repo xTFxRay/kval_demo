@@ -170,7 +170,7 @@
                 </div>
             @endif
             @if (session('success'))
-                <div class="alert alert-success">
+                <div class="alert alert-success" style="color: white;">
                     {{ session('success') }}
                 </div>
             @endif
@@ -201,11 +201,7 @@
                             <td>{{ number_format($product->price, 2) }} €</td>
                             <td>{{ $product->category ?? 'N/A' }}</td>
                             <td>
-
                                 <img src="{{ $product->image ? asset($product->image) : asset('images/image-not-available.png') }}" alt="{{ $product->name }}" style="width: 100px; height: auto; object-fit: cover; border-radius: 5px;">
-                                
-                                
-
                             </td>
                             <td>
                                 <a href="{{ route('product_edit', $product->id) }}" class="action-link">Rediģēt</a>

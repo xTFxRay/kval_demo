@@ -13,7 +13,7 @@ use App\Http\Controllers\ProductController;
 
 Route::get('/login', [AuthorizationController::class, 'login'] ) -> name('login');
 
-Route::get('/delete', [AuthorizationController::class, 'delete'] ) -> name('delete');
+Route::get('/delete/{id}', [AuthorizationController::class, 'delete'] ) -> name('delete');
 
 Route::post('/addSpecification', [CalculatorController::class, 'addSpecification'])->name('addSpecification');
 

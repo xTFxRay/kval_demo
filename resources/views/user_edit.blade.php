@@ -148,7 +148,7 @@
                         <input type="email" name="email" value="{{ $user->email }}" required>
                     
                         <label for="phone">Tālrunis:</label>
-                        <input type="text" name="phone" value="{{ $user->phone }}" required>
+                        <input type="text" name="phone" value="{{ $user->phone }}">
                     
                         <label for="password">Parole:</label>
                         <input type="password" name="password">
@@ -159,7 +159,7 @@
                         <label for="role">Loma:</label>
                         <select name="role" required>
                             <option value="admin">Admin</option>
-                            <option value="user">Lietotājs</option>
+                            <option value="default_user">Lietotājs</option>
                         </select>
                     
                         <label for="photo">Foto:</label>

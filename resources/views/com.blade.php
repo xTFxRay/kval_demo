@@ -124,7 +124,7 @@
         
                 <div id="platiba" class="pasleptie-elem">
                     <label for="platiba">Žoga platība (m)</label>
-                    <input type="number" id="platiba" name="platiba">
+                    <input type="number" id="platiba" name="platiba" min="0">
         
                     <label for="varti">Vārtu veids:</label>
                     <select id="varti" name="varti">
@@ -142,7 +142,7 @@
         
                 <div id="celina_uzstadisana" class="pasleptie-elem">
                     <label for="celina_uzstadisana">Celiņa platība (m²):</label>
-                    <input type="number" id="celina_uzstadisana" name="celina_uzstadisana" min="1" placeholder="Ievadiet platību m²">
+                    <input type="number" id="celina_uzstadisana" name="celina_uzstadisana" min="0" placeholder="Ievadiet platību m²">
                 </div>
         
                 <label for="zaliens">Zāliena uzstādīšana</label>
@@ -153,7 +153,7 @@
         
                 <div id="zaliena_ierikosana" class="pasleptie-elem">
                     <label>Zāliena platība (m²):</label>
-                    <input type="number" id="zaliena_ierikosana" name="zaliena_ierikosana" min="1" placeholder="Ievadiet platību m²">
+                    <input type="number" id="zaliena_ierikosana" name="zaliena_ierikosana" min="0" placeholder="Ievadiet platību m²">
                 </div>
         
                 <h3>Aprēķinātās izmaksas: <span>{{ $totalCost ?? 0 }}</span>€</h3>

@@ -30,6 +30,7 @@ class CalculatorController extends Controller
 
     protected $fasade;
   
+    //Iegūst noklusētās vērtības izmantotās kalkulatora darbībai no config mapes def_values faila
     public function __construct()
     {
         $this->pricing = config('def_values.work');
@@ -44,7 +45,7 @@ class CalculatorController extends Controller
         $this->wall_cost = config('def_values.wall_frame_cost');
         $this->fasade = config('def_values.fasade');
         
-
+        //Iegūst preču datus no DB
         $this->materialPrices = Product::all(['name', 'price'])->pluck('price', 'name')->toArray();
         Session::forget('specifications');
 
@@ -53,7 +54,8 @@ class CalculatorController extends Controller
 
     
     public function layout(Request $request)
-    {      
+    {   
+        //Gadījumam ja palikuši dati no iepriekšējāss kalkulatora darbības   
         Session::forget('buildData');
         Session::forget('totalCost');
 
@@ -64,18 +66,20 @@ class CalculatorController extends Controller
             'squareMeters' => 'required|string',
         ]);
 
+        //Pievieno lietotāja izvēlēto izmaksu sesijas mainīgajā
         $buildData = Session::get('buildData', []);
         $buildData['squareMeters'] = $request->input('squareMeters');
 
         Session::put('buildData', $buildData); 
 
+        //Inicializē kopējās summas mainīgo
         $totalCost = 0;
         Session::put('totalCost', $totalCost);
         
 
         $selectedRange = $request->input('squareMeters');
 
-       
+        //Māju plāni balstīti uz lietotāja izvēlēto mājass izmēru
         $plans = [
             ['name' => 'Namejs', 'size-category' => '40-60', 'size' => '46', 'image' => 'houseplan1.jpg'],
             ['name' => 'Astra', 'size-category' => '40-60', 'size' => '60', 'image' => 'houseplan2.jpg'],
@@ -86,7 +90,7 @@ class CalculatorController extends Controller
         ];
         
 
-       
+        //Iegūst plānus kuri atbilst lietotāja izvēlei
         $filteredPlans = array_filter($plans, function($plan) use ($selectedRange) {
             return $plan['size-category'] === $selectedRange;
         });
@@ -106,9 +110,11 @@ class CalculatorController extends Controller
         $request->validate([
             'housePlan'=> 'string|required',
         ]);
-    
+        
+        
         $buildData = Session::get('buildData', []);
         
+        //Pievieno lietotāja izvēli un atjauno kopējās summas vērtību sesijas mainīgajos
         $buildData['housePlan'] = $request->input('housePlan');
         
         Session::put('buildData', $buildData);
@@ -165,7 +171,8 @@ class CalculatorController extends Controller
         return view('structure', ['totalCost' => $totalCost]);
     }
 
-
+    //Zemāk funkcijas seko iepriekš komentēto funkciju principam 
+    //(dažkārt veicot cenas aprēķinus balstoties uz def_values datiem), tāpēc tās netiks komentētas
     public function heating(Request $request)
 {
     $request->validate([

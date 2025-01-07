@@ -30,10 +30,14 @@ class EmailController extends Controller
     $registrationData = session('registration_data');
     $profilePicturePath=$registrationData['profile_picture'];
     
+
+    //Saglabā profila bildi sistēmā
     if ($profilePicturePath) {
         $profilePicturePath = $request->file('profile_picture')->store('photos', 'public');
     }
 
+
+    //Izveido jaunu lietotāja ierakstu
     $user = User::create([
         'name' => $registrationData['name'],
         'surname' => $registrationData['surname'],
@@ -46,6 +50,7 @@ class EmailController extends Controller
 
     session()->forget('registration_data');
 
+    //Lietotāja pieteikšanās sistēmā
     Auth::login($user);
 
     return redirect()->route('home', ['user' => $user]);

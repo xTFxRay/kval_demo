@@ -23,6 +23,8 @@ class ProductController extends Controller
 
         $query = Product::query();
 
+
+        //Pārbauda kādus filtrus lietotājs ir izvēlējies
         if ($request->has('category') && $request->category !== 'Visi') {
             $query->where('category', $request->category);
         }
@@ -46,7 +48,8 @@ class ProductController extends Controller
                 $query->orderBy('created_at', 'desc');
             }
         }
-    
+        
+        //Pielieto filtrus
         $products = $query->distinct()->get();
         $user = Auth::user();
         
@@ -59,7 +62,7 @@ class ProductController extends Controller
         if (!Auth::check()) {
             return redirect()->route('login')->with('error', 'Šī lapa pieejama tikai reģistrētiem lietotājiem.');
         }
-
+        //Iegūst produkta datus no DB
         $product = Product::findOrFail($id);
         $user = Auth::user(); 
    
@@ -114,13 +117,13 @@ public function viewCart()
     }
 
     $user = Auth::user(); 
-
+    //Iegūst lietotāja grozu
     $cart = Cart::with('items.product')
     ->where('user_id', $user->id)
     ->where('status', 'active') 
     ->first();
 
-
+    //Ja lietotājam nav groza izveido to
     if (!$cart) {
         $cart = Cart::create([
             'user_id' => $user->id,
@@ -130,6 +133,7 @@ public function viewCart()
         return view('cart', compact('cart', 'totalPrice', 'user'));
     }
 
+    //Gadījums ja grozs ir tukšs
     if ($cart->items->isEmpty()) {
         $totalPrice = 0;  
         return view('cart', compact('cart', 'totalPrice', 'user'));
@@ -145,12 +149,15 @@ public function viewCart()
     public function removeFromCart($id)
 {
     $user = Auth::user();
+    //Iegūst lietotāja pēdējā aktīvo grozu
     $cart = Cart::where('user_id', $user->id)
     ->where('status', 'active')->first(); 
  
+
     if (!$cart) {
         return redirect()->route('cart')->with('error', 'Grozs nav atrasts!');
     }
+    //Iegūst dzēšamo preci no CartItems tabulas kas savienota ar Cart tabulu
     $cartItem = CartItem::where('cart_id', $cart->id)->where('product_id', $id)->first();
    
     if ($cartItem) {
@@ -174,15 +181,14 @@ public function checkout()
     $totalPrice = 0;
     $user = Auth::user();
     
+    //Iegūst lietotāja pēdējā aktīvo grozu
     $cart = Cart::with('items.product')->where('user_id', $user->id)->where('status', 'active')->first();
-    if (!$cart) {
-        return view('checkout', ['message' => 'Notikusi kļūda']);
-    }
-
+   
     if ($cart->items->isEmpty()) {
         return view('checkout', ['message' => 'Jūsu grozs ir tukšs']);
     }
 
+    //Aprēķināta kopēja cena grozaa precēm
     foreach ($cart->items as $item) {
         if ($item->product) {
             $totalPrice += $item->product->price * $item->quantity;

@@ -105,7 +105,6 @@
                 <option value="Krasa">Krāsaoti griesti</option>
                 <option value="Paneļi">Paneļi</option>
                 <option value="Koka apšuvums">Koka apšuvums</option>
-                <option value="Ģipškartons">Ģipškartona griesti</option>
             </select>
 
             <h3>Ārējā apdare</h3>

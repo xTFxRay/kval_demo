@@ -36,6 +36,8 @@ class AuthorizationController extends Controller
     if (Auth::attempt($credentials)) {
         $user = Auth::user();
 
+
+        //Apskata gadījumu ja lietotājs ir dzēsis kontu bet mēģina pieslēgties
         if ($user->status == 'deleted') {
             Auth::logout(); 
             return redirect()->route('login')->with("error", "Konts neeksistē");
@@ -45,6 +47,7 @@ class AuthorizationController extends Controller
             return redirect()->intended(route('adminDash'));
         }
 
+        //Sesijas sākumā izveido jaunu grozu ja lietotājam tā nav
         $cart = Cart::where('user_id', $user->id)->where('status', 'active')->first();
         if (!$cart) {
             Cart::create([
@@ -99,7 +102,8 @@ class AuthorizationController extends Controller
                 'status' => 'active',
             ],
         ]);
-    
+        
+        //E-pasta verifikācija
         Mail::send('emails.verificationemail', ['code' => $verificationCode], function ($message) use ($request) {
             $message->to($request->email)
                 ->subject('Jūsu verifikācijas kods');
@@ -117,6 +121,7 @@ class AuthorizationController extends Controller
 
         $cart = Cart::where('user_id', $user->id)->where('status', 'active')->first();
 
+        //"Pamet" lietotāja grozu
         if ($cart) {
             $cart->status = 'abandoned';
             $cart->save();
@@ -131,6 +136,8 @@ class AuthorizationController extends Controller
 
     $user = Auth::user();
 
+
+        //Apskata gadījumu kad lietotājs mēģina atjaunot datus ar jau eksistējoša lietotāja e-pastu
         if (User::where('email', $request->email)
             ->where('status', '!=', 'deleted')
             ->where('id', '!=', auth()->user()->id)  
@@ -149,6 +156,8 @@ class AuthorizationController extends Controller
         'password' => 'nullable|min:8|confirmed', 
         'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
+
+
         if ($request->hasFile('photo')) {
             $path = $request->file('photo')->store('photos', 'public');
             $user->photo = basename($path); 
@@ -161,7 +170,7 @@ class AuthorizationController extends Controller
 
 
     if ($request->filled('password')) {
-        $user->password = Hash::make($request->input('password'));
+        $user->password = Hash::make($request->input('password')); //Kriptē paroli
     }
 
     $user->save();
@@ -172,9 +181,22 @@ class AuthorizationController extends Controller
     public function delete($id)
 {
     $user = User::findOrFail($id);
-    $user->status = 'deleted'; 
+
+    //Pie lietotāaja dzēšanas tā pēdējo grozu "Pamet"
+    $cart = Cart::where('user_id', $user->id)->where('status', 'active')->first();
+
+        if ($cart) {
+            $cart->status = 'abandoned';
+            $cart->save();
+        }
+
+    
+    $user->status = 'deleted'; //Loģiskā dzēšana
     $user->email = null;
     $user->save();
+
+    //Lietotāja atteikšanās no sistēmas
+    Session::flush();
     session()->flash('success', 'Konts veiksmīgi dzēsts!');
     return redirect()->route('login');
 }

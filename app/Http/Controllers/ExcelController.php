@@ -15,16 +15,20 @@ class ExcelController extends Controller
 
     public function makeExcel()
     {
+        //Izveido jaunu Excel darblapu un inicalizē to
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+        //Iegūst kalkulatora rezultātu datus un kopējo summu
         $sessionSpecifications = Session::get('buildData', []);
         $totalCost = Session::get('totalCost', 0);
         
+        //Pievieno nosaukumu tabulai A1 un B1 šūnās apvienojot tās
         $sheet->setCellValue('A1', 'Formas kopsavilkums');
         $sheet->mergeCells('A1:B1');
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
         
+        //Massīvs kalkulatora datu atspoguļošanai darblapā
         $build = Session::get('buildData');
         $buildData = [
             'Cena' => isset($build['cost']) ? $build['cost'] . '€' : 'Nav',
@@ -36,7 +40,7 @@ class ExcelController extends Controller
             'Sienu Apdare' => $build['wallsFinish'] ?? 'Nav',
             'Griesti' => $build['ceiling'] ?? 'Nav',
             'Fasādes Tips' => $build['fasadeType'] ?? 'Nav',
-            'Žogs' => isset($build['fence']) ? $build['fence'] . 'm²' : 'Nav',
+            'Žogs' => isset($build['fence']) ? $build['fence'] . 'm' : 'Nav',
             'Zemes Mērījumi' => $build['groundMeasurement'] ?? 'Nav',
             'Īpašuma Robežu Iestatījumi' => $build['propertyBorderSetting'] ?? 'Nav',
             'Bruģa Tips' => isset($build['paving']) ? $build['paving'] . 'm²' : 'Nav',
@@ -57,7 +61,7 @@ class ExcelController extends Controller
             'Būvatļauja' => $build['buildPermission'] ?? 'Nav',
             'Nodošana Ekspluatācijā' => $build['commisioning'] ?? 'Nav',
             'Garāža' => ($build['garage'] ?? 'Nav') . ' m2',
-            'Stāvvieta' => $build['parking'] ?? 'Nav',
+            'Stāvvieta' => ($build['parking'] ?? 'Nav'). ' m2',
             'Vārti' => $build['gates'] ?? 'Nav',
             'Drošības Sistēma' => $build['securitySystem'] ?? 'Nav',
             'Sensori' => $build['sensors'] ?? 'Nav',
@@ -70,16 +74,18 @@ class ExcelController extends Controller
         ];
         
 
-
+        //Pievieno papildizmaksas rezultātu tabulai 
         $sessionSpecifications = Session::get('specifications', []);
         foreach ($sessionSpecifications as $spec) {
             $buildData[$spec['name']] = $spec['price'];
         }
 
+        //Pievieno kolonnu nosaukumus augstākveidotā masīva datiem
         $sheet->setCellValue('A2', 'Parametrs');
         $sheet->setCellValue('B2', 'Vērtība');
         $sheet->getStyle('A2:B2')->getFont()->setBold(true);
 
+        //Pievieno kalkulatora rezultātu datus (nosaukums -> vērtība formā)
         $row = 3;
         foreach ($buildData as $label => $value) {
             $sheet->setCellValue("A{$row}", $label);
@@ -87,12 +93,15 @@ class ExcelController extends Controller
             $row++;
         }
 
+        //Izveido faila nosaukumu un īslaicīgi saglabā to
         $fileName = 'form_summary.xlsx';
         $tempFile = storage_path('app/public/' . $fileName);
 
+        //Ieraksta izveidotās darblapas saturu Excel failā
         $writer = new Xlsx($spreadsheet);
         $writer->save($tempFile);
 
+        //Lejupielādē failu lietotāja datorā un izdzēš to pēc ielādes
         return response()->download($tempFile)->deleteFileAfterSend(true);
     }
 }
