@@ -138,7 +138,7 @@
                     <hr>
                     
                     @if (Auth::check())
-                        <a href="{{ route('delete') }}" class="menu-link" onclick="return confirm('Vai tiešām vēlaties dzēst savu kontu?')">
+                    <a href="{{ route('delete', ['id' => $user->id]) }}" class="menu-link" onclick="return confirm('Vai tiešām vēlaties dzēst savu kontu?')">
                             <i class="fa-solid fa-right-from-bracket"></i>
                             <p>Dzēst kontu</p>
                             <span>></span>

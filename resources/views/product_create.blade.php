@@ -138,7 +138,7 @@
                         <textarea name="description" required></textarea>
                     
                         <label for="price">Cena:</label>
-                        <input type="number" name="price" step="0.01" required>
+                        <input type="number" name="price" step="0.01" min="0" required>
                     
                         <label for="category">Kategorija:</label>
                         <select name="category" id="category">

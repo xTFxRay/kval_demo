@@ -113,6 +113,7 @@
         cursor: pointer;
         transition: background-color 0.3s ease;
         margin: 0 10px;
+        width: 185px;
     }
 
     .cart-summary a {

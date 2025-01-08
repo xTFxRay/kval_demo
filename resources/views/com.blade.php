@@ -163,16 +163,6 @@
             </form>
         </div>
         
-        <div id="popup" class="popup">
-            <div class="content">
-                <h2>Vai vēlaties pievienot savas izmaksas?</h2>
-                <div class="choises">
-                    <a href="#" class="button" onclick="submitFormWithRoute('{{ route('specification') }}')">Pievienot izmaksas</a>
-                    <a href="#" class="button" onclick="submitFormWithRoute('{{ route('extras') }}')">Izlaist</a>
-                </div>
-                <span class="close">&times;</span>
-            </div>
-        </div>
         
         <script src="{{ asset('js/app.js') }}"></script>
         <script>

@@ -147,7 +147,7 @@
             </div>
             <div>
                 <label for="total_amount">Kopējā summa:</label>
-                <input type="number" id="total_amount" name="total_amount" value="{{ old('total_amount', $order->total_amount) }}" required>
+                <input type="number" id="total_amount" name="total_amount" value="{{ old('total_amount', $order->total_amount) }}" step="0.01" required>
             </div>
             <button type="submit">Saglabāt</button>
             <a href="{{ route('users') }}" class="back-button">Atpakaļ</a>

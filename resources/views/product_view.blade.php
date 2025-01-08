@@ -178,6 +178,7 @@
             max-width: 100%; 
             object-fit: contain; 
             border-radius: inherit;
+            max-height: inherit;
         }
       
         

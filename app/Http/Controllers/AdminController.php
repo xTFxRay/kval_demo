@@ -180,10 +180,24 @@ public function product_add(Request $request)
        
     //Saglabā attēlu sistēmā 
     if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('images', 'public');
+        if ($product->image) {
+            $oldImagePath = public_path($product->image);
+            if (file_exists($oldImagePath)) {
+                unlink($oldImagePath);
+            }
+        }
+    
+        $file = $request->file('image');
+    
+        $destinationPath = public_path('images');
 
-        $product->image = $path;
+        $fileName = time() . '_' . $file->getClientOriginalName();
+    
+        $file->move($destinationPath, $fileName);
+    
+        $product->image = 'images/' . $fileName;
     }
+
 
     $product->save();
 

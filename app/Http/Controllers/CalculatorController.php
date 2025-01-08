@@ -553,6 +553,7 @@ public function extras(Request $request){
     $buildData['cost'] = $totalCost;
 
     $totalCost += $resultsCost;
+    $buildData['resultsCost'] = $resultsCost;
     $totalCost = (float)round($totalCost, 2);
     Session::put('buildData', $buildData);
     Session::put('totalCost', $totalCost);
@@ -710,7 +711,7 @@ public function addSpecification(Request $request)
             ]);
         }
     }
-    
+        
         return view('results', ['build' => $buildData, 'totalCost' => $totalCost, 'user' => $user]);
     }
 

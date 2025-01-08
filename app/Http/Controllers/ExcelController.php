@@ -31,7 +31,7 @@ class ExcelController extends Controller
         //Massīvs kalkulatora datu atspoguļošanai darblapā
         $build = Session::get('buildData');
         $buildData = [
-            'Cena' => isset($build['cost']) ? $build['cost'] . '€' : 'Nav',
+            'Cena' => isset($totalCost) ? $totalCost . '€' : 'Nav',
             'Mājas nosaukums' => $build['housePlan'] ?? 'Nav',
             'Izmērs' => $build['squareMeters'] ?? 'Nav' . ' m²',
             'Sienas Platums' => ($build['wallWidth'] ?? 'Nav') . ' cm',
