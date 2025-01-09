@@ -77,7 +77,7 @@ class AuthorizationController extends Controller
             $request->validate([
             'name' => 'required|string|max:100',
             'surname' => 'required|string|max:100',
-            'phone' => 'required|string',
+            'phone' => 'nullable|string',
             'email' => 'required|email',
             'password' => 'required|min:7|confirmed',
             'profile_picture' => 'nullable|image',
